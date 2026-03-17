@@ -4,54 +4,46 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
-    
-    <title>v1.4 - Secure Vault</title>
-    <meta name="description" content="Haseeb's Secure Personal Vault">
-    <meta name="robots" content="index, follow">
-
+    <title>v1.5 - Secure Vault</title>
     <style>
         :root { --primary: #28a745; --google: #4285f4; --danger: #dc3545; --dark: #333; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
+        .hidden { display: none !important; }
         
-        /* Dashboard Header Bar */
-        .status-bar { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 5px rgba(0,0,0,0.1); }
-        .user-info { display: flex; align-items: center; gap: 10px; }
+        /* Fixed Header Bar */
+        .status-bar { background: var(--primary); color: white; padding: 10px 20px; display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 1000; }
         .user-photo { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; }
 
         .container { width: 90%; max-width: 450px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
-        .hidden { display: none !important; }
         
         input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 5px; font-size: 15px; }
-        
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 5px; }
         .btn-primary { background: var(--primary); color: white; }
-        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); margin-top: 12px; }
-        .btn-google { background: white; color: #757575; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; }
-        
+        .btn-google { background: white; color: #757575; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; }
+
         .tab-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
         .tab-buttons button { background: #eee; color: #555; }
         .tab-buttons button.active { background: var(--primary); color: white; }
-        
+
+        /* Card Styling Fix */
         .card { background: #f9f9f9; padding: 15px; margin-top: 15px; border-radius: 10px; border-left: 5px solid var(--primary); position: relative; }
-        .pass-card { border-left-color: var(--google); background: #eef5ff; }
+        .pass-card { border-left-color: var(--google); background: #f0f7ff; }
+        
+        /* Trash Icon on Right */
+        .del-icon { position: absolute; right: 10px; top: 10px; color: var(--danger); font-size: 20px; cursor: pointer; background: none; border: none; width: auto; padding: 5px; }
+        
+        .data-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; background: #fff; padding: 10px; border-radius: 8px; border: 1px solid #eee; }
         .timestamp { font-size: 10px; color: #888; display: block; margin-top: 10px; text-align: right; }
-        
-        .data-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; background: rgba(0,0,0,0.03); padding: 8px; border-radius: 5px; }
         .action-btn { cursor: pointer; font-size: 18px; border: none; background: none; padding: 0 5px; }
+        .pass-input { border: none; background: transparent; font-size: 16px; width: 60%; color: #333; outline: none; }
         .logout-btn { background: var(--danger); color: white; margin-top: 25px; }
-        
-        /* Signup Modal */
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:2000; }
-        .modal-content { width: 90%; max-width: 400px; background: white; padding: 25px; border-radius: 15px; }
     </style>
 </head>
 <body>
 
 <div id="dashboard-bar" class="status-bar hidden">
-    <div class="user-info">
-        <span id="welcome-text">Hi, User</span>
-    </div>
-    <img id="user-pfp" class="user-photo" src="https://via.placeholder.com/35" alt="DP">
+    <div class="user-info"><span id="welcome-text">Hi, User</span></div>
+    <img id="user-pfp" class="user-photo" src="" alt="DP">
 </div>
 
 <div class="container" id="auth-container">
@@ -59,26 +51,10 @@
     <input type="email" id="login-email" placeholder="Email Address">
     <input type="password" id="login-pass" placeholder="Password">
     <button class="btn-primary" onclick="handleLogin()">Login</button>
-    
-    <button class="btn-outline" onclick="toggleModal('signup-modal', true)">Create New Account (Sign Up)</button>
-    
-    <div style="text-align:center; margin:20px 0; border-bottom:1px solid #ddd; line-height:0.1em;"><span style="background:#fff; padding:0 10px; color:#999">OR</span></div>
-    
+    <div style="text-align:center; margin:15px 0; color:#999">OR</div>
     <button class="btn-google" onclick="handleGoogleAuth()">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google
     </button>
-</div>
-
-<div id="signup-modal" class="modal hidden">
-    <div class="modal-content">
-        <h3>Sign Up</h3>
-        <input type="email" id="reg-email" placeholder="Gmail Address">
-        <input type="password" id="reg-pass" placeholder="Password">
-        <input type="password" id="reg-conf-pass" placeholder="Confirm Password">
-        <button class="btn-primary" onclick="handleSignup()">Register Account</button>
-        <button class="btn-outline" style="border-color:var(--danger); color:var(--danger)" onclick="toggleModal('signup-modal', false)">Cancel</button>
-        <p style="font-size:11px; color:gray; margin-top:10px;">Firebase verification email might land in Spam.</p>
-    </div>
 </div>
 
 <div class="container hidden" id="main-app">
@@ -101,14 +77,13 @@
         <button class="btn-primary" onclick="saveData('passwords')">Save Password</button>
         <div id="pass-list"></div>
     </div>
-
     <button class="logout-btn" onclick="logout()">Logout</button>
 </div>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBt8gP3y2M3tjabKwjNfiotgqmxmhIq7cI",
@@ -123,46 +98,16 @@
     const auth = getAuth(app);
     const db = getFirestore(app);
     const provider = new GoogleAuthProvider();
-    let currentUser = null;
 
-    // --- Authentication ---
-    window.handleLogin = () => {
-        const email = document.getElementById('login-email').value.trim();
-        const pass = document.getElementById('login-pass').value;
-        if(!email || !pass) return alert("Enter details");
-        signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
-    };
-
-    window.handleSignup = async () => {
-        const email = document.getElementById('reg-email').value.trim();
-        const pass = document.getElementById('reg-pass').value;
-        const conf = document.getElementById('reg-conf-pass').value;
-
-        if(!email || !pass) return alert("Fill all fields");
-        if(pass !== conf) return alert("Passwords do not match!");
-        
-        try {
-            const cred = await createUserWithEmailAndPassword(auth, email, pass);
-            await sendEmailVerification(cred.user);
-            alert("Account Successfully Created! Verification link sent to Gmail.");
-            toggleModal('signup-modal', false);
-        } catch(e) { alert(e.message); }
-    };
-
-    window.handleGoogleAuth = () => signInWithPopup(auth, provider);
-    window.logout = () => signOut(auth);
-
+    // Direct Login Check (Prevents Login Screen Flash)
     onAuthStateChanged(auth, user => {
         if (user) {
-            currentUser = user;
             document.getElementById('auth-container').classList.add('hidden');
             document.getElementById('dashboard-bar').classList.remove('hidden');
             document.getElementById('main-app').classList.remove('hidden');
-            
             document.getElementById('welcome-text').innerText = `Hi, ${user.displayName || user.email.split('@')[0]}`;
             document.getElementById('user-pfp').src = user.photoURL || 'https://via.placeholder.com/35';
-            
-            loadData('notes'); loadData('passwords');
+            loadData('notes', user.uid); loadData('passwords', user.uid);
         } else {
             document.getElementById('auth-container').classList.remove('hidden');
             document.getElementById('dashboard-bar').classList.add('hidden');
@@ -170,8 +115,17 @@
         }
     });
 
-    // --- Data Logic ---
+    window.handleLogin = () => {
+        const email = document.getElementById('login-email').value.trim();
+        const pass = document.getElementById('login-pass').value;
+        signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
+    };
+
+    window.handleGoogleAuth = () => signInWithPopup(auth, provider);
+    window.logout = () => signOut(auth);
+
     window.saveData = async (type) => {
+        const user = auth.currentUser;
         const data = type === 'notes' ? {
             title: document.getElementById('note-title').value || "Untitled",
             body: document.getElementById('note-body').value
@@ -180,14 +134,9 @@
             user: document.getElementById('site-user').value,
             pass: document.getElementById('site-pass').value
         };
-
-        if(type === 'notes' && !data.body) return alert("Note body is empty!");
-        if(type === 'passwords' && (!data.site || !data.pass)) return alert("Fill password details!");
-        
+        if(!data.body && type === 'notes') return alert("Empty!");
         await addDoc(collection(db, type), { 
-            ...data, 
-            uid: currentUser.uid, 
-            ts: Date.now(),
+            ...data, uid: user.uid, 
             date: new Date().toLocaleDateString(),
             time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         });
@@ -197,12 +146,12 @@
     window.togglePass = (id) => {
         const el = document.getElementById('p-'+id);
         const icon = document.getElementById('i-'+id);
-        if(el.type === "password") { el.type = "text"; icon.innerText = "🔒"; }
-        else { el.type = "password"; icon.innerText = "👁️"; }
+        el.type = (el.type === "password") ? "text" : "password";
+        icon.innerText = (el.type === "password") ? "👁️" : "🔒";
     };
 
-    function loadData(type) {
-        const q = query(collection(db, type), where("uid", "==", currentUser.uid));
+    function loadData(type, uid) {
+        const q = query(collection(db, type), where("uid", "==", uid));
         onSnapshot(q, (snapshot) => {
             const list = document.getElementById(type === 'notes' ? 'notes-list' : 'pass-list');
             list.innerHTML = '';
@@ -213,38 +162,29 @@
                 div.className = `card ${type === 'passwords' ? 'pass-card' : ''}`;
                 
                 if(type === 'notes') {
-                    div.innerHTML = `
-                        <button class="action-btn" style="position:absolute; top:10px; right:10px; color:var(--danger)" onclick="deleteItem('notes','${id}')">🗑️</button>
+                    div.innerHTML = `<button class="del-icon" onclick="deleteItem('notes','${id}')">🗑️</button>
                         <b style="color:var(--primary)">${item.title}</b>
-                        <div class="data-row"><span>${item.body}</span></div>
+                        <div class="data-row"><span>${item.body}</span><button class="action-btn" onclick="navigator.clipboard.writeText('${item.body}')">📋</button></div>
                         <span class="timestamp">${item.date} | ${item.time}</span>`;
                 } else {
-                    div.innerHTML = `
-                        <button class="action-btn" style="position:absolute; top:10px; right:10px; color:var(--danger)" onclick="deleteItem('passwords','${id}')">🗑️</button>
+                    div.innerHTML = `<button class="del-icon" onclick="deleteItem('passwords','${id}')">🗑️</button>
                         <center><b style="color:var(--google)">${item.site}</b></center>
                         <small>User:</small>
-                        <div class="data-row">
-                            <span>${item.user}</span>
-                            <button class="action-btn" onclick="navigator.clipboard.writeText('${item.user}')">📋</button>
-                        </div>
+                        <div class="data-row"><span>${item.user}</span><button class="action-btn" onclick="navigator.clipboard.writeText('${item.user}')">📋</button></div>
                         <small>Pass:</small>
                         <div class="data-row">
-                            <input type="password" value="${item.pass}" id="p-${id}" readonly style="border:none; background:none; padding:0; margin:0; width:65%; font-size:16px;">
-                            <div>
-                                <button class="action-btn" id="i-${id}" onclick="togglePass('${id}')">👁️</button>
-                                <button class="action-btn" onclick="navigator.clipboard.writeText('${item.pass}')">📋</button>
-                            </div>
+                            <input type="password" value="${item.pass}" id="p-${id}" class="pass-input" readonly>
+                            <div><button class="action-btn" id="i-${id}" onclick="togglePass('${id}')">👁️</button>
+                            <button class="action-btn" onclick="navigator.clipboard.writeText('${item.pass}')">📋</button></div>
                         </div>
-                        <span class="timestamp">${item.date} | ${item.time}</span>`;
+                        <span class="timestamp">${item.date || 'undefined'} | ${item.time || 'undefined'}</span>`;
                 }
                 list.appendChild(div);
             });
         });
     }
 
-    // --- Helpers ---
-    window.deleteItem = async (t, id) => { if(confirm("Delete this entry?")) await deleteDoc(doc(db, t, id)); };
-    window.toggleModal = (id, show) => document.getElementById(id).classList.toggle('hidden', !show);
+    window.deleteItem = async (t, id) => { if(confirm("Delete?")) await deleteDoc(doc(db, t, id)); };
     window.showTab = (t) => {
         document.getElementById('section-notes').classList.toggle('hidden', t !== 'notes');
         document.getElementById('section-passwords').classList.toggle('hidden', t !== 'passwords');
