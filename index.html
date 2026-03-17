@@ -3,8 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <link rel="manifest" href="manifest.json">
-    <title>v1.2 - Secure Vault</title>
+    <meta name="theme-color" content="#28a745">
+    <link rel="apple-touch-icon" href="https://cdn-icons-png.flaticon.com/512/508/508281.png">
+
+    <title>Haseeb Secure Vault - Notes & Passwords</title>
+    <meta name="description" content="Haseeb's Secure Personal Vault for managing private notes and passwords with Firebase encryption.">
+    <meta name="keywords" content="Haseeb Vault, Password Manager, Secure Notes, GitHub Vault">
+    <meta name="author" content="Haseeb Nazar Malik">
+    <meta name="robots" content="index, follow">
+
     <style>
         :root { --primary: #28a745; --google: #4285f4; --danger: #dc3545; --dark: #333; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 10px; display: flex; justify-content: center; }
@@ -15,17 +24,16 @@
         button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 5px; transition: 0.2s; }
         .btn-primary { background: var(--primary); color: white; }
         .btn-google { background: white; color: #757575; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        
         .tab-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
         .tab-buttons button { background: #eee; color: #555; }
         .tab-buttons button.active { background: var(--primary); color: white; }
         
-        /* Card Styles */
         .card { background: #f9f9f9; padding: 15px; margin-top: 15px; border-radius: 10px; border-left: 5px solid var(--primary); position: relative; }
         .pass-card { border-left-color: var(--google); background: #eef5ff; }
         .card b { font-size: 14px; color: #555; }
-        .data-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; background: rgba(255,255,255,0.5); padding: 5px 8px; border-radius: 5px; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; background: rgba(255,255,255,0.8); padding: 5px 8px; border-radius: 5px; border: 1px solid #eee; }
         
-        /* Icons/Small Buttons */
         .action-btn { cursor: pointer; font-size: 18px; background: none; border: none; padding: 5px; width: auto; margin: 0; }
         .copy-icon { color: var(--google); }
         .del-icon { color: var(--danger); position: absolute; top: 10px; right: 10px; }
@@ -72,6 +80,15 @@
 </div>
 
 <script type="module">
+    // PWA Service Worker Registration
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', () => {
+            navigator.serviceWorker.register('./sw.js')
+            .then(reg => console.log('SW Registered'))
+            .catch(err => console.log('SW Registration Failed', err));
+        });
+    }
+
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
@@ -95,6 +112,7 @@
     window.handleEmailAuth = async () => {
         const email = document.getElementById('email').value.trim();
         const pass = document.getElementById('password').value;
+        if(!email || !pass) return alert("Fill all fields");
         try { await signInWithEmailAndPassword(auth, email, pass); } 
         catch (e) { 
             if(e.code.includes('user-not-found') || e.code.includes('invalid-credential')) {
@@ -141,7 +159,7 @@
 
     window.copyText = (text) => {
         navigator.clipboard.writeText(text);
-        alert("Copied: " + text);
+        alert("Copied!");
     };
 
     function loadData(type) {
@@ -166,7 +184,7 @@
                 } else {
                     div.innerHTML = `
                         <button class="action-btn del-icon" onclick="deleteItem('passwords','${id}')">🗑️</button>
-                        <center><b>${item.site}</b></center>
+                        <center><b style="color:var(--google)">${item.site}</b></center>
                         <b>User:</b>
                         <div class="data-row">
                             <span>${item.user}</span>
