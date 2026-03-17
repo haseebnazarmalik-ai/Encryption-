@@ -4,7 +4,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="manifest.json">
+    
     <title>v1.4 - Secure Vault</title>
+    <meta name="description" content="Haseeb's Secure Personal Vault">
+    <meta name="robots" content="index, follow">
+
     <style>
         :root { --primary: #28a745; --google: #4285f4; --danger: #dc3545; --dark: #333; }
         body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 0; }
@@ -14,28 +18,31 @@
         .user-info { display: flex; align-items: center; gap: 10px; }
         .user-photo { width: 35px; height: 35px; border-radius: 50%; border: 2px solid white; }
 
-        .container { width: 90%; max-width: 450px; background: white; padding: 20px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
-        .hidden { display: none; }
+        .container { width: 90%; max-width: 450px; background: white; padding: 25px; border-radius: 15px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); margin: 20px auto; }
+        .hidden { display: none !important; }
         
-        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
-        button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 5px; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; font-size: 16px; }
+        button { width: 100%; padding: 12px; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 5px; font-size: 15px; }
+        
         .btn-primary { background: var(--primary); color: white; }
-        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); margin-top: 10px; }
-        .btn-google { background: white; color: #757575; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .btn-outline { background: white; color: var(--primary); border: 2px solid var(--primary); margin-top: 12px; }
+        .btn-google { background: white; color: #757575; border: 1px solid #ddd; display: flex; align-items: center; justify-content: center; gap: 10px; margin-top: 15px; }
         
         .tab-buttons { display: flex; gap: 10px; margin-bottom: 15px; }
         .tab-buttons button { background: #eee; color: #555; }
         .tab-buttons button.active { background: var(--primary); color: white; }
         
         .card { background: #f9f9f9; padding: 15px; margin-top: 15px; border-radius: 10px; border-left: 5px solid var(--primary); position: relative; }
+        .pass-card { border-left-color: var(--google); background: #eef5ff; }
         .timestamp { font-size: 10px; color: #888; display: block; margin-top: 10px; text-align: right; }
         
-        .data-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; background: rgba(0,0,0,0.03); padding: 5px 8px; border-radius: 5px; }
-        .action-btn { cursor: pointer; font-size: 18px; border: none; background: none; }
-        .logout-btn { background: var(--danger); color: white; margin-top: 20px; }
+        .data-row { display: flex; justify-content: space-between; align-items: center; margin-top: 5px; background: rgba(0,0,0,0.03); padding: 8px; border-radius: 5px; }
+        .action-btn { cursor: pointer; font-size: 18px; border: none; background: none; padding: 0 5px; }
+        .logout-btn { background: var(--danger); color: white; margin-top: 25px; }
         
-        /* Modal for Signup */
-        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.5); display:flex; align-items:center; justify-content:center; z-index:2000; }
+        /* Signup Modal */
+        .modal { position: fixed; top:0; left:0; width:100%; height:100%; background:rgba(0,0,0,0.7); display:flex; align-items:center; justify-content:center; z-index:2000; }
+        .modal-content { width: 90%; max-width: 400px; background: white; padding: 25px; border-radius: 15px; }
     </style>
 </head>
 <body>
@@ -52,9 +59,10 @@
     <input type="email" id="login-email" placeholder="Email Address">
     <input type="password" id="login-pass" placeholder="Password">
     <button class="btn-primary" onclick="handleLogin()">Login</button>
+    
     <button class="btn-outline" onclick="toggleModal('signup-modal', true)">Create New Account (Sign Up)</button>
     
-    <div style="text-align:center; margin:15px 0; border-bottom:1px solid #ddd; line-height:0.1em;"><span style="background:#fff; padding:0 10px; color:#999">OR</span></div>
+    <div style="text-align:center; margin:20px 0; border-bottom:1px solid #ddd; line-height:0.1em;"><span style="background:#fff; padding:0 10px; color:#999">OR</span></div>
     
     <button class="btn-google" onclick="handleGoogleAuth()">
         <img src="https://www.gstatic.com/firebasejs/ui/2.0.0/images/auth/google.svg" width="18"> Continue with Google
@@ -62,14 +70,14 @@
 </div>
 
 <div id="signup-modal" class="modal hidden">
-    <div class="container">
+    <div class="modal-content">
         <h3>Sign Up</h3>
         <input type="email" id="reg-email" placeholder="Gmail Address">
         <input type="password" id="reg-pass" placeholder="Password">
         <input type="password" id="reg-conf-pass" placeholder="Confirm Password">
-        <button class="btn-primary" onclick="handleSignup()">Send OTP & Register</button>
+        <button class="btn-primary" onclick="handleSignup()">Register Account</button>
         <button class="btn-outline" style="border-color:var(--danger); color:var(--danger)" onclick="toggleModal('signup-modal', false)">Cancel</button>
-        <p style="font-size:12px; color:gray">Note: Firebase automatically handles verification emails for security.</p>
+        <p style="font-size:11px; color:gray; margin-top:10px;">Firebase verification email might land in Spam.</p>
     </div>
 </div>
 
@@ -100,7 +108,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut, GoogleAuthProvider, signInWithPopup, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot, doc, deleteDoc, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
         apiKey: "AIzaSyBt8gP3y2M3tjabKwjNfiotgqmxmhIq7cI",
@@ -119,22 +127,24 @@
 
     // --- Authentication ---
     window.handleLogin = () => {
-        const email = document.getElementById('login-email').value;
+        const email = document.getElementById('login-email').value.trim();
         const pass = document.getElementById('login-pass').value;
+        if(!email || !pass) return alert("Enter details");
         signInWithEmailAndPassword(auth, email, pass).catch(e => alert(e.message));
     };
 
     window.handleSignup = async () => {
-        const email = document.getElementById('reg-email').value;
+        const email = document.getElementById('reg-email').value.trim();
         const pass = document.getElementById('reg-pass').value;
         const conf = document.getElementById('reg-conf-pass').value;
 
+        if(!email || !pass) return alert("Fill all fields");
         if(pass !== conf) return alert("Passwords do not match!");
         
         try {
             const cred = await createUserWithEmailAndPassword(auth, email, pass);
             await sendEmailVerification(cred.user);
-            alert("Verification link sent to Gmail. Please verify and Login.");
+            alert("Account Successfully Created! Verification link sent to Gmail.");
             toggleModal('signup-modal', false);
         } catch(e) { alert(e.message); }
     };
@@ -149,7 +159,6 @@
             document.getElementById('dashboard-bar').classList.remove('hidden');
             document.getElementById('main-app').classList.remove('hidden');
             
-            // Dashboard Bar Updates
             document.getElementById('welcome-text').innerText = `Hi, ${user.displayName || user.email.split('@')[0]}`;
             document.getElementById('user-pfp').src = user.photoURL || 'https://via.placeholder.com/35';
             
@@ -161,7 +170,7 @@
         }
     });
 
-    // --- Core Logic ---
+    // --- Data Logic ---
     window.saveData = async (type) => {
         const data = type === 'notes' ? {
             title: document.getElementById('note-title').value || "Untitled",
@@ -172,11 +181,13 @@
             pass: document.getElementById('site-pass').value
         };
 
-        if(!data.body && type === 'notes') return alert("Note is empty!");
+        if(type === 'notes' && !data.body) return alert("Note body is empty!");
+        if(type === 'passwords' && (!data.site || !data.pass)) return alert("Fill password details!");
         
         await addDoc(collection(db, type), { 
             ...data, 
             uid: currentUser.uid, 
+            ts: Date.now(),
             date: new Date().toLocaleDateString(),
             time: new Date().toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'})
         });
@@ -203,19 +214,22 @@
                 
                 if(type === 'notes') {
                     div.innerHTML = `
-                        <button class="action-btn del-icon" onclick="deleteItem('notes','${id}')">🗑️</button>
+                        <button class="action-btn" style="position:absolute; top:10px; right:10px; color:var(--danger)" onclick="deleteItem('notes','${id}')">🗑️</button>
                         <b style="color:var(--primary)">${item.title}</b>
                         <div class="data-row"><span>${item.body}</span></div>
                         <span class="timestamp">${item.date} | ${item.time}</span>`;
                 } else {
                     div.innerHTML = `
-                        <button class="action-btn del-icon" onclick="deleteItem('passwords','${id}')">🗑️</button>
-                        <center><b>${item.site}</b></center>
+                        <button class="action-btn" style="position:absolute; top:10px; right:10px; color:var(--danger)" onclick="deleteItem('passwords','${id}')">🗑️</button>
+                        <center><b style="color:var(--google)">${item.site}</b></center>
                         <small>User:</small>
-                        <div class="data-row"><span>${item.user}</span></div>
+                        <div class="data-row">
+                            <span>${item.user}</span>
+                            <button class="action-btn" onclick="navigator.clipboard.writeText('${item.user}')">📋</button>
+                        </div>
                         <small>Pass:</small>
                         <div class="data-row">
-                            <input type="password" value="${item.pass}" id="p-${id}" readonly style="border:none; background:none; padding:0; margin:0; width:70%">
+                            <input type="password" value="${item.pass}" id="p-${id}" readonly style="border:none; background:none; padding:0; margin:0; width:65%; font-size:16px;">
                             <div>
                                 <button class="action-btn" id="i-${id}" onclick="togglePass('${id}')">👁️</button>
                                 <button class="action-btn" onclick="navigator.clipboard.writeText('${item.pass}')">📋</button>
@@ -229,7 +243,7 @@
     }
 
     // --- Helpers ---
-    window.deleteItem = async (t, id) => { if(confirm("Delete?")) await deleteDoc(doc(db, t, id)); };
+    window.deleteItem = async (t, id) => { if(confirm("Delete this entry?")) await deleteDoc(doc(db, t, id)); };
     window.toggleModal = (id, show) => document.getElementById(id).classList.toggle('hidden', !show);
     window.showTab = (t) => {
         document.getElementById('section-notes').classList.toggle('hidden', t !== 'notes');
