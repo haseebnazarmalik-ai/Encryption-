@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="manifest.json">
+    <title>v1.0 - Secure Vault</title>
+    <style>
+        :root { --primary: #28a745; --dark: #333; }
+        body { font-family: 'Segoe UI', sans-serif; background: #f0f2f5; margin: 0; padding: 10px; }
+        .container { max-width: 500px; margin: 20px auto; background: white; padding: 20px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        .hidden { display: none; }
+        input, textarea { width: 100%; padding: 12px; margin: 8px 0; border: 1px solid #ddd; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 12px; background: var(--primary); color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; margin-top: 10px; }
+        .note-card { background: #fff9c4; padding: 10px; margin-top: 10px; border-radius: 8px; border-left: 5px solid #ffeb3b; position: relative; }
+        .pass-card { background: #e3f2fd; padding: 10px; margin-top: 10px; border-radius: 8px; border-left: 5px solid #2196f3; }
+        .logout-btn { background: #dc3545; margin-top: 20px; }
+        .tab-buttons { display: flex; gap: 10px; margin-bottom: 20px; }
+        .tab-buttons button { background: #6c757d; }
+        .tab-buttons button.active { background: var(--primary); }
+    </style>
+</head>
+<body>
+
+<div class="container" id="auth-container">
+    <h2 id="auth-title">Login to Vault</h2>
+    <input type="email" id="email" placeholder="Email">
+    <input type="password" id="password" placeholder="Password">
+    <button onclick="handleAuth()" id="main-auth-btn">Login / Sign Up</button>
+</div>
+
+<div class="container hidden" id="main-app">
+    <div class="tab-buttons">
+        <button onclick="showTab('notes')" id="btn-notes" class="active">Notes</button>
+        <button onclick="showTab('passwords')" id="btn-pass">Passwords</button>
+    </div>
+
+    <div id="section-notes">
+        <input type="text" id="note-title" placeholder="Note Title">
+        <textarea id="note-body" placeholder="Write your note..."></textarea>
+        <button onclick="saveData('notes')">Save Note</button>
+        <div id="notes-list"></div>
+    </div>
+
+    <div id="section-passwords" class="hidden">
+        <input type="text" id="site-name" placeholder="Website Name">
+        <input type="text" id="site-pass" placeholder="Password">
+        <button onclick="saveData('passwords')">Save Password</button>
+        <div id="pass-list"></div>
+    </div>
+
+    <button class="logout-btn" onclick="logout()">Logout</button>
+</div>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, addDoc, query, where, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBt8gP3y2M3tjabKwjNfiotgqmxmhIq7cI",
+        authDomain: "encryption-cb1d7.firebaseapp.com",
+        projectId: "encryption-cb1d7",
+        storageBucket: "encryption-cb1d7.firebasestorage.app",
+        messagingSenderId: "341148500717",
+        appId: "1:341148500717:web:08c39bd1dbd2b672ab42e4"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
+    let currentUser = null;
+
+    // Auth Handler (Login/Signup combined for simplicity v1)
+    window.handleAuth = async () => {
+        const email = document.getElementById('email').value;
+        const pass = document.getElementById('password').value;
+        try {
+            await signInWithEmailAndPassword(auth, email, pass);
+        } catch (error) {
+            if (error.code === 'auth/user-not-found' || error.code === 'auth/invalid-credential') {
+                await createUserWithEmailAndPassword(auth, email, pass);
+            } else { alert(error.message); }
+        }
+    };
+
+    // Auth State Observer
+    onAuthStateChanged(auth, user => {
+        if (user) {
+            currentUser = user;
+            document.getElementById('auth-container').classList.add('hidden');
+            document.getElementById('main-app').classList.remove('hidden');
+            loadData('notes');
+            loadData('passwords');
+        } else {
+            document.getElementById('auth-container').classList.remove('hidden');
+            document.getElementById('main-app').classList.add('hidden');
+        }
+    });
+
+    window.logout = () => signOut(auth);
+
+    // Save Data
+    window.saveData = async (type) => {
+        const data = type === 'notes' ? {
+            title: document.getElementById('note-title').value,
+            body: document.getElementById('note-body').value
+        } : {
+            site: document.getElementById('site-name').value,
+            pass: document.getElementById('site-pass').value
+        };
+
+        await addDoc(collection(db, type), {
+            ...data,
+            uid: currentUser.uid,
+            timestamp: Date.now()
+        });
+        
+        // Clear inputs
+        if(type === 'notes') { document.getElementById('note-title').value = ''; document.getElementById('note-body').value = ''; }
+        else { document.getElementById('site-name').value = ''; document.getElementById('site-pass').value = ''; }
+    };
+
+    // Load Real-time Data
+    function loadData(type) {
+        const q = query(collection(db, type), where("uid", "==", currentUser.uid));
+        onSnapshot(q, (snapshot) => {
+            const list = document.getElementById(type === 'notes' ? 'notes-list' : 'pass-list');
+            list.innerHTML = '';
+            snapshot.forEach(doc => {
+                const item = doc.data();
+                const div = document.createElement('div');
+                div.className = type === 'notes' ? 'note-card' : 'pass-card';
+                div.innerHTML = type === 'notes' ? `<b>${item.title}</b><p>${item.body}</p>` : `<b>Site:</b> ${item.site} <br> <b>Pass:</b> ${item.pass}`;
+                list.appendChild(div);
+            });
+        });
+    }
+
+    // Tabs logic
+    window.showTab = (tab) => {
+        document.getElementById('section-notes').classList.toggle('hidden', tab !== 'notes');
+        document.getElementById('section-passwords').classList.toggle('hidden', tab !== 'passwords');
+        document.getElementById('btn-notes').classList.toggle('active', tab === 'notes');
+        document.getElementById('btn-pass').classList.toggle('active', tab === 'passwords');
+    };
+
+</script>
+</body>
+</html>
