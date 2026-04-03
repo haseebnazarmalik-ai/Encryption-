@@ -3,171 +3,279 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GMS Multi-Tracker Pro | V1.5</title>
+    <title>GMS Multi-Tracker Pro | Enterprise Edition V1.8</title>
     
     <meta name="theme-color" content="#075E54">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
+        /* --- ADVANCED CSS ROOT VARIABLES --- */
         :root {
             --wa-green: #075E54;
             --wa-teal: #128C7E;
-            --wa-light-green: #25D366;
+            --wa-light: #25D366;
             --wa-bg: #e5ddd5;
             --white: #ffffff;
+            --shadow: 0 2px 10px rgba(0,0,0,0.15);
             --bubble-in: #ffffff;
             --bubble-out: #dcf8c6;
-            --text-main: #303030;
-            --text-sec: #808080;
+            --text-dark: #2c3e50;
+            --text-gray: #7f8c8d;
+            --danger: #e74c3c;
+            --transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
         }
 
+        /* --- GLOBAL STYLES --- */
+        * { box-sizing: border-box; -webkit-font-smoothing: antialiased; }
         body {
             font-family: 'Roboto', sans-serif;
             margin: 0; padding: 0;
             background-color: var(--wa-bg);
-            height: 100vh; display: flex; flex-direction: column;
+            height: 100vh;
+            display: flex; flex-direction: column;
             overflow: hidden;
+            touch-action: manipulation;
         }
 
         .hidden { display: none !important; }
 
-        /* Instant Loader */
-        #instant-loader {
+        /* --- INSTANT SPLASH & LOGIN --- */
+        #splash-screen {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 30000;
+            background: white; z-index: 50000;
             display: flex; flex-direction: column; justify-content: center; align-items: center;
         }
+        .loader-ring {
+            width: 50px; height: 50px;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--wa-teal);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
 
-        /* Login Screen */
-        #login-screen {
+        #login-page {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: white; z-index: 20000;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            background: #f0f2f5; z-index: 40000;
+            display: flex; flex-direction: column; align-items: center; justify-content: center;
         }
-        .login-card { text-align: center; padding: 40px; }
-        #google-login-btn {
-            background: #4285F4; color: white; border: none; padding: 15px 30px;
-            font-size: 16px; border-radius: 30px; cursor: pointer; font-weight: bold;
-            display: flex; align-items: center; gap: 10px; margin-top: 20px;
+        .login-box {
+            background: white; padding: 40px; border-radius: 24px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            text-align: center; width: 85%; max-width: 400px;
+        }
+        .login-logo { font-size: 70px; color: var(--wa-light); margin-bottom: 20px; }
+        .google-btn {
+            background: #fff; color: #757575; border: 1px solid #ddd;
+            padding: 12px 24px; border-radius: 8px; font-weight: 600;
+            display: flex; align-items: center; gap: 12px; cursor: pointer;
+            margin: 20px auto; transition: var(--transition);
+        }
+        .google-btn:hover { background: #f8f8f8; box-shadow: 0 2px 4px rgba(0,0,0,0.1); }
+
+        /* --- DASHBOARD HEADER --- */
+        header {
+            background: var(--wa-green);
+            color: white; padding-top: 10px;
+            box-shadow: var(--shadow); z-index: 1000;
+        }
+        .header-top {
+            display: flex; justify-content: space-between;
+            align-items: center; padding: 10px 20px;
+        }
+        .header-top h2 { margin: 0; font-size: 22px; font-weight: 500; }
+        .user-profile { display: flex; align-items: center; gap: 10px; }
+        .user-profile img { width: 40px; height: 40px; border-radius: 50%; border: 2px solid white; }
+
+        /* --- TABS SYSTEM --- */
+        .tabs-bar { display: flex; position: relative; background: var(--wa-green); margin-top: 10px; }
+        .tab-btn {
+            flex: 1; padding: 16px 0; text-align: center;
+            color: rgba(255,255,255,0.7); font-size: 13px;
+            font-weight: 700; text-transform: uppercase; cursor: pointer;
+            transition: color 0.3s;
+        }
+        .tab-btn.active { color: white; }
+        .active-line {
+            position: absolute; bottom: 0; left: 0; height: 4px;
+            background: white; width: 33.33%; transition: var(--transition);
         }
 
-        /* Header */
-        header { background: var(--wa-green); color: white; flex-shrink: 0; z-index: 100; }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; }
-        .app-title { font-size: 20px; font-weight: 500; }
-        #user-photo { width: 38px; height: 38px; border-radius: 50%; border: 2px solid white; }
+        /* --- SEARCH & ACTIONS BAR --- */
+        .search-area {
+            background: white; padding: 12px 16px; display: flex; gap: 10px;
+            align-items: center; box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .search-bar {
+            flex: 1; background: #f0f2f5; border: none; padding: 10px 15px;
+            border-radius: 20px; outline: none; font-size: 14px;
+        }
+        .excel-btn {
+            background: #1D6F42; color: white; border: none; width: 38px; height: 38px;
+            border-radius: 50%; display: flex; align-items: center; justify-content: center;
+            cursor: pointer; box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+        }
 
-        /* Tabs */
-        .tabs-container { display: flex; background: var(--wa-green); position: relative; }
-        .tab { flex: 1; text-align: center; padding: 15px 0; color: rgba(255,255,255,0.7); font-size: 13px; font-weight: 500; text-transform: uppercase; cursor: pointer; }
-        .tab.active { color: white; }
-        .tab-indicator { position: absolute; bottom: 0; left: 0; height: 3px; background: white; width: 33.33%; transition: transform 0.3s; }
-
-        /* Swiper & Slides */
+        /* --- MAIN SLIDER CONTENT --- */
         .swiper { width: 100%; flex: 1; }
-        .swiper-slide { height: 100%; overflow-y: auto; padding: 15px; box-sizing: border-box; display: flex; flex-direction: column; }
-
-        /* Search & Input Area */
-        .sticky-controls {
-            background: white; padding: 12px; border-radius: 12px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1); margin-bottom: 15px;
-            display: flex; flex-direction: column; gap: 10px; flex-shrink: 0;
-        }
-        .wa-input {
-            width: 100%; border: 1px solid #ddd; padding: 12px; border-radius: 8px;
-            outline: none; font-size: 15px; box-sizing: border-box;
-        }
-        .btn-row { display: flex; gap: 10px; }
-        .action-btn {
-            flex: 1; background: var(--wa-teal); color: white; border: none;
-            padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;
-            display: flex; justify-content: center; align-items: center; gap: 8px;
+        .swiper-slide {
+            height: 100%; overflow-y: auto; padding: 15px;
+            display: flex; flex-direction: column; gap: 15px;
         }
 
-        /* Data Bubbles (WhatsApp Style) */
-        .data-list { display: flex; flex-direction: column; gap: 12px; padding-bottom: 20px; }
-        .bubble {
-            padding: 12px 15px; border-radius: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            max-width: 85%; position: relative; font-size: 15px;
+        /* --- STICKY INPUTS --- */
+        .input-card {
+            background: white; padding: 18px; border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05); flex-shrink: 0;
         }
-        .bubble.out { background: var(--bubble-out); align-self: flex-end; border-bottom-right-radius: 2px; }
-        .bubble.in { background: var(--bubble-in); align-self: flex-start; border-bottom-left-radius: 2px; }
-        .bubble-meta { font-size: 10px; color: var(--text-sec); display: block; text-align: right; margin-top: 5px; }
-
-        /* Password Specific */
-        .pass-card-title { font-weight: bold; color: var(--wa-green); border-bottom: 1px solid #eee; margin-bottom: 8px; display: block; }
-        .cred-row { 
-            display: flex; justify-content: space-between; align-items: center; 
-            background: #f7f7f7; padding: 8px; border-radius: 6px; margin: 4px 0;
+        .form-group { margin-bottom: 12px; }
+        .form-input {
+            width: 100%; border: 1px solid #e0e0e0; padding: 12px;
+            border-radius: 10px; font-size: 15px; outline: none;
+            transition: border-color 0.3s;
         }
-        .cred-val { font-family: monospace; color: #444; }
-        .copy-icon { color: var(--wa-teal); cursor: pointer; padding: 5px; }
+        .form-input:focus { border-color: var(--wa-teal); }
+        .submit-btn {
+            width: 100%; background: var(--wa-teal); color: white;
+            border: none; padding: 14px; border-radius: 10px;
+            font-weight: 700; cursor: pointer; display: flex;
+            align-items: center; justify-content: center; gap: 10px;
+        }
 
-        /* Utils */
-        .del-link { color: #e74c3c; font-size: 11px; text-align: right; cursor: pointer; margin-top: 8px; display: block; font-weight: bold; }
+        /* --- CHAT BUBBLES --- */
+        .chat-view { display: flex; flex-direction: column; gap: 12px; padding-bottom: 40px; }
+        .msg-bubble {
+            max-width: 85%; padding: 12px 16px; border-radius: 12px;
+            position: relative; box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            animation: slideUp 0.4s ease;
+        }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        
+        .msg-bubble.out { background: var(--bubble-out); align-self: flex-end; border-bottom-right-radius: 2px; }
+        .msg-bubble.in { background: var(--bubble-in); align-self: flex-start; border-bottom-left-radius: 2px; }
+        
+        .msg-content { font-size: 15px; color: var(--text-dark); line-height: 1.5; word-break: break-word; }
+        .msg-time { display: block; text-align: right; font-size: 10px; color: #888; margin-top: 6px; font-weight: 600; }
+
+        /* --- PASSWORD SPECIFIC CARD --- */
+        .pass-card-header {
+            font-weight: 700; color: var(--wa-green); font-size: 16px;
+            border-bottom: 1px solid #f0f0f0; padding-bottom: 8px; margin-bottom: 10px;
+            display: flex; align-items: center; gap: 8px;
+        }
+        .data-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: rgba(0,0,0,0.03); padding: 10px; border-radius: 8px; margin: 6px 0;
+        }
+        .data-label { font-size: 11px; color: var(--text-gray); font-weight: bold; text-transform: uppercase; }
+        .data-value { font-family: 'Courier New', Courier, monospace; font-weight: 600; color: #333; }
+        
+        .icon-btn { background: none; border: none; color: var(--wa-teal); cursor: pointer; padding: 5px; font-size: 16px; }
+
+        .footer-actions {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-top: 10px; padding-top: 8px; border-top: 1px dashed #ddd;
+        }
+        .del-link { color: var(--danger); font-size: 12px; font-weight: bold; cursor: pointer; text-decoration: none; }
+
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
+        /* Scrollbar styling */
+        ::-webkit-scrollbar { width: 5px; }
+        ::-webkit-scrollbar-thumb { background: rgba(0,0,0,0.1); border-radius: 10px; }
 
     </style>
 </head>
 <body>
 
-    <div id="instant-loader">
-        <div style="width:40px; height:40px; border:4px solid #f3f3f3; border-top:4px solid #128C7E; border-radius:50%; animation:spin 1s linear infinite;"></div>
+    <div id="splash-screen">
+        <div class="loader-ring"></div>
+        <p style="margin-top:15px; font-weight:600; color:#555;">GMS Multi-Tracker Loading...</p>
     </div>
 
-    <div id="login-screen" class="hidden">
-        <div class="login-card">
-            <i class="fab fa-whatsapp" style="font-size: 70px; color: var(--wa-light-green);"></i>
-            <h2 style="margin-top:15px;">GMS Smart Tracker</h2>
-            <p style="color:#666;">Sync your technical logs instantly</p>
-            <button id="google-login-btn"><i class="fab fa-google"></i> Login with Google</button>
+    <div id="login-page" class="hidden">
+        <div class="login-box">
+            <i class="fab fa-whatsapp login-logo"></i>
+            <h2 style="margin:0;">GMS Enterprise</h2>
+            <p style="color:#777; margin-bottom:20px;">Secure Technical Asset Tracking</p>
+            <button class="google-btn" id="btn-login">
+                <img src="https://upload.wikimedia.org/wikipedia/commons/5/53/Google_%22G%22_Logo.svg" width="18" alt="">
+                Sign in with Google
+            </button>
+            <p style="font-size: 11px; color: #999;">Authorized Personnel Only</p>
         </div>
     </div>
 
-    <div id="dashboard" class="hidden">
+    <div id="main-dashboard" class="hidden">
         <header>
-            <div class="top-bar">
-                <div class="app-title">GMS Tracker</div>
-                <img id="user-photo" src="" alt="">
+            <div class="header-top">
+                <h2>GMS Tracker</h2>
+                <div class="user-profile">
+                    <span id="display-name" style="font-size:14px;">User</span>
+                    <img id="display-pic" src="" alt="DP">
+                </div>
             </div>
-            <div class="tabs-container">
-                <div class="tab active" onclick="jumpTo(0)">Queries</div>
-                <div class="tab" onclick="jumpTo(1)">Passwords</div>
-                <div class="tab" onclick="jumpTo(2)">Notes</div>
-                <div id="tab-line" class="tab-indicator"></div>
+            
+            <div class="tabs-bar">
+                <div class="tab-btn active" onclick="gotoSlide(0)">Queries</div>
+                <div class="tab-btn" onclick="gotoSlide(1)">Passwords</div>
+                <div class="tab-btn" onclick="gotoSlide(2)">Notes</div>
+                <div id="tab-indicator" class="active-line"></div>
             </div>
         </header>
 
+        <div class="search-area">
+            <i class="fas fa-search" style="color:#aaa;"></i>
+            <input type="text" id="global-search" class="search-bar" placeholder="Search by name, site, or date...">
+            <button class="excel-btn" onclick="exportDataToExcel()" title="Export to Excel">
+                <i class="fas fa-file-excel"></i>
+            </button>
+        </div>
+
         <div class="swiper">
             <div class="swiper-wrapper">
-                <div class="swiper-slide">
-                    <div class="sticky-controls">
-                        <input type="text" id="q-input" class="wa-input" placeholder="Type new query...">
-                        <button class="action-btn" onclick="saveToFirebase('queries')"><i class="fas fa-paper-plane"></i> SEND QUERY</button>
+                
+                <div class="swiper-slide" id="slide-queries">
+                    <div class="input-card">
+                        <div class="form-group">
+                            <input type="text" id="inp-query" class="form-input" placeholder="Type technical query or task...">
+                        </div>
+                        <button class="submit-btn" onclick="handleSave('queries')">
+                            <i class="fas fa-paper-plane"></i> SUBMIT LOG
+                        </button>
                     </div>
-                    <div id="list-queries" class="data-list"></div>
+                    <div id="render-queries" class="chat-view"></div>
                 </div>
 
-                <div class="swiper-slide">
-                    <div class="sticky-controls">
-                        <input type="text" id="p-site" class="wa-input" placeholder="Device/Service Name">
-                        <input type="text" id="p-user" class="wa-input" placeholder="Username/Email">
-                        <input type="text" id="p-pass" class="wa-input" placeholder="Password">
-                        <button class="action-btn" onclick="saveToFirebase('passwords')"><i class="fas fa-shield-alt"></i> SAVE CREDENTIALS</button>
+                <div class="swiper-slide" id="slide-passwords">
+                    <div class="input-card">
+                        <div class="form-group"><input type="text" id="p-title" class="form-input" placeholder="Device / Site Name"></div>
+                        <div class="form-group"><input type="text" id="p-user" class="form-input" placeholder="Username / Email"></div>
+                        <div class="form-group"><input type="text" id="p-pass" class="form-input" placeholder="Security Password"></div>
+                        <button class="submit-btn" onclick="handleSave('passwords')">
+                            <i class="fas fa-shield-alt"></i> SAVE CREDENTIALS
+                        </button>
                     </div>
-                    <div id="list-passwords" class="data-list"></div>
+                    <div id="render-passwords" class="chat-view"></div>
                 </div>
 
-                <div class="swiper-slide">
-                    <div class="sticky-controls">
-                        <textarea id="n-input" class="wa-input" style="height:70px; resize:none;" placeholder="Quick technical note..."></textarea>
-                        <button class="action-btn" onclick="saveToFirebase('notes')"><i class="fas fa-plus"></i> ADD NOTE</button>
+                <div class="swiper-slide" id="slide-notes">
+                    <div class="input-card">
+                        <div class="form-group">
+                            <textarea id="inp-note" class="form-input" style="height:100px; resize:none;" placeholder="Quick technical notes, specs or reminders..."></textarea>
+                        </div>
+                        <button class="submit-btn" onclick="handleSave('notes')">
+                            <i class="fas fa-sticky-note"></i> ATTACH NOTE
+                        </button>
                     </div>
-                    <div id="list-notes" class="data-list"></div>
+                    <div id="render-notes" class="chat-view"></div>
                 </div>
+
             </div>
         </div>
     </div>
@@ -175,9 +283,10 @@
     <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // CONFIGURATION
         const firebaseConfig = {
             apiKey: "AIzaSyBt8gP3y2M3tjabKwjNfiotgqmxmhIq7cI",
             authDomain: "encryption-cb1d7.firebaseapp.com",
@@ -193,101 +302,191 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        let swiper, uid;
+        let swiperInstance = null;
+        let currentUserUID = null;
+        let masterData = { queries: {}, passwords: {}, notes: {} };
 
-        // INSTANT LOGIN LOGIC: Check LocalStorage first to hide login screen immediately
-        if(localStorage.getItem('gms_logged')) {
-            document.getElementById('login-screen').classList.add('hidden');
-            document.getElementById('dashboard').classList.remove('hidden');
-        }
-
-        onAuthStateChanged(auth, (user) => {
-            document.getElementById('instant-loader').classList.add('hidden');
-            if (user) {
-                uid = user.uid;
-                localStorage.setItem('gms_logged', 'true');
-                document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard').classList.remove('hidden');
-                document.getElementById('user-photo').src = user.photoURL;
-                
-                if(!swiper) {
-                    swiper = new Swiper('.swiper', {
-                        speed: 300,
-                        on: { slideChange: () => syncTabs(swiper.activeIndex) }
-                    });
+        // 1. INSTANT PERSISTENCE & AUTH
+        setPersistence(auth, browserLocalPersistence).then(() => {
+            onAuthStateChanged(auth, (user) => {
+                document.getElementById('splash-screen').classList.add('hidden');
+                if (user) {
+                    currentUserUID = user.uid;
+                    showDashboard(user);
+                } else {
+                    showLogin();
                 }
-                ['queries', 'passwords', 'notes'].forEach(p => syncPath(p));
-            } else {
-                localStorage.removeItem('gms_logged');
-                document.getElementById('login-screen').classList.remove('hidden');
-                document.getElementById('dashboard').classList.add('hidden');
-            }
+            });
         });
 
-        document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
-        window.jumpTo = (idx) => swiper.slideTo(idx);
-
-        function syncTabs(idx) {
-            document.querySelectorAll('.tab').forEach((t, i) => t.classList.toggle('active', i === idx));
-            document.getElementById('tab-line').style.transform = `translateX(${idx * 100}%)`;
-        }
-
-        function syncPath(path) {
-            const cache = localStorage.getItem(`cache_${uid}_${path}`);
-            if(cache) render(path, JSON.parse(cache));
-            onValue(ref(db, `users/${uid}/${path}`), (s) => {
-                const data = s.val() || {};
-                localStorage.setItem(`cache_${uid}_${path}`, JSON.stringify(data));
-                render(path, data);
-            });
-        }
-
-        window.saveToFirebase = (path) => {
-            let data = { ts: new Date().toLocaleTimeString([], {hour:'2-digit', minute:'2-digit'}), dt: new Date().toLocaleDateString('en-GB') };
-            if(path === 'queries') { data.val = document.getElementById('q-input').value; document.getElementById('q-input').value = ''; }
-            else if(path === 'notes') { data.val = document.getElementById('n-input').value; document.getElementById('n-input').value = ''; }
-            else {
-                data.s = document.getElementById('p-site').value; 
-                data.u = document.getElementById('p-user').value; 
-                data.p = document.getElementById('p-pass').value;
-                document.getElementById('p-site').value = ''; document.getElementById('p-user').value = ''; document.getElementById('p-pass').value = '';
+        function showDashboard(user) {
+            document.getElementById('login-page').classList.add('hidden');
+            document.getElementById('main-dashboard').classList.remove('hidden');
+            document.getElementById('display-name').innerText = user.displayName.split(' ')[0];
+            document.getElementById('display-pic').src = user.photoURL;
+            
+            if(!swiperInstance) {
+                swiperInstance = new Swiper('.swiper', {
+                    speed: 400,
+                    on: { slideChange: () => updateTabUI(swiperInstance.activeIndex) }
+                });
             }
-            if(data.val || data.s) push(ref(db, `users/${uid}/${path}`), data);
+            initSync();
         }
 
-        window.removeItem = (path, key) => confirm("Delete permanently?") && remove(ref(db, `users/${uid}/${path}/${key}`));
+        function showLogin() {
+            document.getElementById('login-page').classList.remove('hidden');
+            document.getElementById('main-dashboard').classList.add('hidden');
+        }
 
-        function render(path, data) {
-            const list = document.getElementById(`list-${path}`);
-            list.innerHTML = '';
-            Object.keys(data).reverse().forEach(key => {
-                const item = data[key];
-                const bubble = document.createElement('div');
-                bubble.className = `bubble ${path === 'queries' ? 'out' : 'in'}`;
-                
-                if(path === 'passwords') {
-                    bubble.innerHTML = `
-                        <span class="pass-card-title">${item.s}</span>
-                        <div class="cred-row"><span class="cred-val" id="u-${key}">${item.u}</span><i class="fas fa-copy copy-icon" onclick="cp('u-${key}')"></i></div>
-                        <div class="cred-row"><span class="cred-val" id="p-${key}">••••••••</span>
-                            <div style="display:flex;"><i class="fas fa-eye copy-icon" style="color:#999" onclick="sh('${key}','${item.p}')"></i><i class="fas fa-key copy-icon" onclick="cp_raw('${item.p}')"></i></div>
-                        </div>
-                        <span class="bubble-meta">${item.dt} • ${item.ts}</span>
-                        <span class="del-link" onclick="removeItem('passwords','${key}')">DELETE</span>`;
-                } else {
-                    bubble.innerHTML = `<div style="white-space:pre-wrap;">${item.val}</div>
-                        <span class="bubble-meta">${item.dt} • ${item.ts}</span>
-                        <span class="del-link" style="color:${path==='queries'?'#128C7E':'#e74c3c'}" onclick="removeItem('${path}','${key}')">${path==='queries'?'DONE':'DELETE'}</span>`;
+        document.getElementById('btn-login').onclick = () => signInWithPopup(auth, provider);
+
+        // 2. DATA SYNC & SEARCH ENGINE
+        function initSync() {
+            const paths = ['queries', 'passwords', 'notes'];
+            paths.forEach(path => {
+                const cached = localStorage.getItem(`cache_${currentUserUID}_${path}`);
+                if(cached) {
+                    masterData[path] = JSON.parse(cached);
+                    renderPath(path, masterData[path]);
                 }
-                list.appendChild(bubble);
+
+                onValue(ref(db, `users/${currentUserUID}/${path}`), (snapshot) => {
+                    const data = snapshot.val() || {};
+                    masterData[path] = data;
+                    localStorage.setItem(`cache_${currentUserUID}_${path}`, JSON.stringify(data));
+                    renderPath(path, data);
+                });
             });
         }
 
-        window.sh = (k, v) => { const e = document.getElementById(`p-${k}`); e.innerText = (e.innerText==='••••••••') ? v : '••••••••'; }
-        window.cp = (id) => { navigator.clipboard.writeText(document.getElementById(id).innerText); alert("Copied!"); }
-        window.cp_raw = (v) => { navigator.clipboard.writeText(v); alert("Password Copied!"); }
+        // SMART SEARCH LOGIC
+        document.getElementById('global-search').oninput = function(e) {
+            const query = e.target.value.toLowerCase();
+            const activeIdx = swiperInstance.activeIndex;
+            const currentPath = activeIdx === 0 ? 'queries' : activeIdx === 1 ? 'passwords' : 'notes';
+            
+            const filtered = {};
+            Object.keys(masterData[currentPath]).forEach(key => {
+                const item = masterData[currentPath][key];
+                const content = JSON.stringify(item).toLowerCase();
+                if(content.includes(query)) filtered[key] = item;
+            });
+            renderPath(currentPath, filtered);
+        };
+
+        // 3. HANDLERS
+        window.gotoSlide = (i) => swiperInstance.slideTo(i);
+
+        function updateTabUI(idx) {
+            document.querySelectorAll('.tab-btn').forEach((b, i) => b.classList.toggle('active', i === idx));
+            document.getElementById('tab-indicator').style.transform = `translateX(${idx * 100}%)`;
+        }
+
+        window.handleSave = (path) => {
+            const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const datestamp = new Date().toLocaleDateString('en-GB');
+            let payload = { time: timestamp, date: datestamp };
+
+            if(path === 'queries') {
+                const val = document.getElementById('inp-query').value.trim();
+                if(!val) return; payload.text = val;
+                document.getElementById('inp-query').value = '';
+            } else if(path === 'notes') {
+                const val = document.getElementById('inp-note').value.trim();
+                if(!val) return; payload.text = val;
+                document.getElementById('inp-note').value = '';
+            } else {
+                const s = document.getElementById('p-title').value.trim();
+                const u = document.getElementById('p-user').value.trim();
+                const p = document.getElementById('p-pass').value.trim();
+                if(!s || !p) { alert("Site & Password Required!"); return; }
+                payload = { ...payload, site: s, user: u, pass: p };
+                document.getElementById('p-title').value = '';
+                document.getElementById('p-user').value = '';
+                document.getElementById('p-pass').value = '';
+            }
+            push(ref(db, `users/${currentUserUID}/${path}`), payload);
+        };
+
+        window.deleteEntry = (path, key) => {
+            if(confirm("Confirm permanent deletion?")) {
+                remove(ref(db, `users/${currentUserUID}/${path}/${key}`));
+            }
+        };
+
+        // 4. RENDERING ENGINE
+        function renderPath(path, data) {
+            const container = document.getElementById(`render-${path}`);
+            container.innerHTML = '';
+            const sortedKeys = Object.keys(data).reverse();
+
+            sortedKeys.forEach(key => {
+                const item = data[key];
+                const div = document.createElement('div');
+                div.className = `msg-bubble ${path === 'queries' ? 'out' : 'in'}`;
+
+                if(path === 'passwords') {
+                    div.innerHTML = `
+                        <div class="pass-card-header"><i class="fas fa-lock"></i> ${item.site}</div>
+                        <div class="data-row">
+                            <div><span class="data-label">User</span><br><span class="data-value" id="u-${key}">${item.user || 'N/A'}</span></div>
+                            <button class="icon-btn" onclick="copyText('u-${key}')"><i class="fas fa-copy"></i></button>
+                        </div>
+                        <div class="data-row">
+                            <div><span class="data-label">Pass</span><br><span class="data-value" id="p-${key}">••••••••</span></div>
+                            <div style="display:flex; gap:5px;">
+                                <button class="icon-btn" style="color:#aaa" onclick="togglePass('${key}','${item.pass}')"><i class="fas fa-eye"></i></button>
+                                <button class="icon-btn" onclick="copyRaw('${item.pass}')"><i class="fas fa-key"></i></button>
+                            </div>
+                        </div>
+                        <span class="msg-time">${item.date} • ${item.time}</span>
+                        <div class="footer-actions"><span class="del-link" onclick="deleteEntry('passwords','${key}')">REMOVE</span></div>
+                    `;
+                } else {
+                    div.innerHTML = `
+                        <div class="msg-content">${item.text}</div>
+                        <span class="msg-time">${item.date} • ${item.time}</span>
+                        <div class="footer-actions">
+                            <span class="del-link" style="color:${path==='queries'?'#128C7E':'#e74c3c'}" onclick="deleteEntry('${path}','${key}')">
+                                ${path === 'queries' ? '<i class="fas fa-check-double"></i> MARK DONE' : 'DELETE'}
+                            </span>
+                        </div>
+                    `;
+                }
+                container.appendChild(div);
+            });
+        }
+
+        // 5. EXPORT ENGINE
+        window.exportDataToExcel = () => {
+            const activeIdx = swiperInstance.activeIndex;
+            const currentPath = activeIdx === 0 ? 'queries' : activeIdx === 1 ? 'passwords' : 'notes';
+            const rawData = masterData[currentPath];
+            
+            const rows = Object.keys(rawData).map(k => ({ ID: k, ...rawData[k] }));
+            if(rows.length === 0) { alert("No data to export!"); return; }
+
+            const worksheet = XLSX.utils.json_to_sheet(rows);
+            const workbook = XLSX.utils.book_new();
+            XLSX.utils.book_append_sheet(workbook, worksheet, currentPath.toUpperCase());
+            XLSX.writeFile(workbook, `GMS_${currentPath}_Export_${new Date().getTime()}.xlsx`);
+        };
+
+        // UTILS
+        window.togglePass = (k, v) => {
+            const el = document.getElementById(`p-${k}`);
+            el.innerText = (el.innerText === '••••••••') ? v : '••••••••';
+        };
+        window.copyText = (id) => {
+            navigator.clipboard.writeText(document.getElementById(id).innerText);
+            alert("Username Copied!");
+        };
+        window.copyRaw = (v) => {
+            navigator.clipboard.writeText(v);
+            alert("Password Copied!");
+        };
 
     </script>
-    <style> @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } } </style>
 </body>
 </html>
