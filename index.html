@@ -24,49 +24,44 @@
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
         body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: var(--wa-bg); min-height: 100vh; }
-
         .hidden { display: none !important; }
 
         header { background: var(--wa-green); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; }
-        
         .user-profile { display: flex; align-items: center; gap: 10px; }
-        #u-name { font-size: 14px; font-weight: 500; }
-        #u-pic { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid white; background: #eee; object-fit: cover; }
+        #u-pic { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid white; object-fit: cover; }
 
         .tab-strip { display: flex; background: var(--wa-green); position: relative; }
         .tab-item { flex: 1; text-align: center; padding: 16px 0; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; cursor: pointer; z-index: 2; }
         .tab-item.active { color: white; }
-        .tab-indicator { position: absolute; bottom: 0; left: 0; height: 4px; background: white; width: 33.33%; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1; }
+        .tab-indicator { position: absolute; bottom: 0; left: 0; height: 4px; background: white; width: 33.33%; transition: transform 0.3s ease; z-index: 1; }
 
         .search-area { background: white; padding: 12px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .search-wrapper { flex: 1; display: flex; align-items: center; background: #f0f2f5; padding: 2px 15px; border-radius: 30px; position: relative; }
         .search-box { flex: 1; background: transparent; border: none; padding: 10px; font-size: 14px; }
-        #clear-search { color: var(--text-muted); cursor: pointer; display: none; margin-left: 5px; }
+        #clear-search { color: var(--text-muted); cursor: pointer; display: none; }
 
         .content-section { display: none; width: 100%; max-width: 800px; margin: 0 auto; padding: 10px; }
         .content-section.active { display: block; }
 
         .input-panel { background: white; padding: 15px; box-shadow: var(--shadow); margin: 10px 0; border-radius: 15px; }
         .wa-input { width: 100%; border: 1px solid #e9edef; padding: 12px; border-radius: 8px; font-size: 15px; margin-bottom: 10px; }
-        .send-btn { width: 100%; background: var(--wa-teal); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
+        .send-btn { width: 100%; background: var(--wa-teal); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; }
         .count-tag { font-size: 11px; color: var(--text-muted); text-align: right; display: block; margin-top: 5px; font-weight: 500; }
 
         .bubble { width: 96%; margin: 8px auto; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: var(--white); }
         .pass-site { font-weight: 700; color: var(--wa-green); display: block; font-size: 17px; margin-bottom: 8px; border-bottom: 1px solid #f1f1f1; padding-bottom: 5px;}
-        .cred-box { background: #f8f9fa; border-radius: 8px; padding: 10px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .cred-box { background: #f8f9fa; border-radius: 8px; padding: 10px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; }
         .copy-btn { background: none; border: none; color: var(--wa-teal); cursor: pointer; font-size: 16px; padding: 5px; }
 
         .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f1f1; }
-        .btn-delete { color: var(--danger); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 5px; }
+        .btn-delete { color: var(--danger); font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 5px; }
 
-        #custom-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
-        .modal-box { background: white; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: popIn 0.2s ease-out; }
-        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        /* MODAL FIX */
+        #custom-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+        .modal-box { background: white; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
         .modal-btns { display: flex; gap: 12px; margin-top: 20px; }
-        .m-btn { flex: 1; padding: 12px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 14px; }
-        .m-confirm { background: var(--danger); color: white; }
-        .m-cancel { background: #f0f2f5; color: var(--text-main); }
+        .m-btn { flex: 1; padding: 14px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; }
 
         #login-screen { position: fixed; inset: 0; background: #f0f2f5; z-index: 9000; display: flex; justify-content: center; align-items: center; }
     </style>
@@ -74,7 +69,7 @@
 <body>
 
     <div id="login-screen" class="hidden">
-        <div style="background:white; padding:40px; border-radius:24px; text-align:center; width:85%; max-width:400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div style="background:white; padding:40px; border-radius:24px; text-align:center; width:85%; max-width:400px;">
             <i class="fab fa-whatsapp" style="font-size:60px; color:var(--wa-teal);"></i>
             <h2 style="margin: 20px 0;">GMS Tracker</h2>
             <button id="btn-google" class="send-btn" style="background:#4285F4;">SIGN IN WITH GOOGLE</button>
@@ -85,10 +80,7 @@
         <header>
             <div class="top-bar">
                 <div style="font-size: 20px; font-weight: 700;">GMS Tracker</div>
-                <div class="user-profile">
-                    <span id="u-name">...</span>
-                    <img id="u-pic" src="" alt="">
-                </div>
+                <div class="user-profile"><span id="u-name">...</span><img id="u-pic" src="" alt=""></div>
             </div>
             <div class="tab-strip">
                 <div class="tab-item active" onclick="nav('queries', 0)">Queries</div>
@@ -101,7 +93,7 @@
         <div class="search-area">
             <div class="search-wrapper">
                 <i class="fas fa-search" style="color:var(--text-muted);"></i>
-                <input type="text" id="master-search" class="search-box" placeholder="Search saved items...">
+                <input type="text" id="master-search" class="search-box" placeholder="Search...">
                 <i class="fas fa-times-circle" id="clear-search" onclick="resetSearch()"></i>
             </div>
             <button onclick="exportExcel()" style="border:none; background:#1d6f42; color:white; border-radius:50%; width:35px; height:35px;"><i class="fas fa-file-excel"></i></button>
@@ -111,8 +103,8 @@
 
         <div id="sec-queries" class="content-section active">
             <div class="input-panel" id="panel-queries">
-                <input type="text" id="in-q" class="wa-input" placeholder="Enter task or query...">
-                <button class="send-btn" onclick="saveData('queries')">SAVE TO CLOUD</button>
+                <input type="text" id="in-q" class="wa-input" placeholder="Enter task...">
+                <button class="send-btn" onclick="saveData('queries')">SAVE</button>
                 <span class="count-tag" id="count-queries">Total: 0</span>
             </div>
             <div id="list-queries"></div>
@@ -131,7 +123,7 @@
 
         <div id="sec-notes" class="content-section">
             <div class="input-panel" id="panel-notes">
-                <textarea id="in-n" class="wa-input" style="height:80px; resize:none;" placeholder="Technical notes..."></textarea>
+                <textarea id="in-n" class="wa-input" style="height:80px; resize:none;" placeholder="Notes..."></textarea>
                 <button class="send-btn" onclick="saveData('notes')">ADD NOTE</button>
                 <span class="count-tag" id="count-notes">Total: 0</span>
             </div>
@@ -142,11 +134,10 @@
     <div id="custom-modal">
         <div class="modal-box">
             <div style="font-size: 45px; color: var(--danger); margin-bottom: 15px;"><i class="fas fa-trash-alt"></i></div>
-            <h3 style="margin:0; color: #333;">Delete Record?</h3>
-            <p style="color: #666; font-size: 14px; margin: 10px 0;">This will remove it permanently.</p>
+            <h3 style="margin:0;">Delete Permanently?</h3>
             <div class="modal-btns">
-                <button class="m-btn m-cancel" onclick="closeModal()">CANCEL</button>
-                <button id="confirm-del-btn" class="m-btn m-confirm">DELETE</button>
+                <button class="m-btn" style="background:#f0f2f5;" onclick="closeModal()">CANCEL</button>
+                <button id="final-del-btn" class="m-btn" style="background:var(--danger); color:white;">DELETE</button>
             </div>
         </div>
     </div>
@@ -171,81 +162,10 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        let uid, currentTab = 'queries', deleteInfo = null;
+        let uid, currentTab = 'queries', deleteTarget = null;
         let memory = { queries: {}, passwords: {}, notes: {} };
 
-        // --- SEARCH ---
-        const sInput = document.getElementById('master-search');
-        const cBtn = document.getElementById('clear-search');
-        sInput.oninput = (e) => {
-            const term = e.target.value.toLowerCase();
-            const panel = document.getElementById(`panel-${currentTab}`);
-            if(term.length > 0) { panel.classList.add('hidden'); cBtn.style.display = 'block'; }
-            else { panel.classList.remove('hidden'); cBtn.style.display = 'none'; }
-            const filtered = {};
-            Object.keys(memory[currentTab]).forEach(k => { 
-                if(JSON.stringify(memory[currentTab][k]).toLowerCase().includes(term)) filtered[k] = memory[currentTab][k]; 
-            });
-            render(currentTab, filtered);
-        };
-        window.resetSearch = () => { sInput.value = ''; document.getElementById(`panel-${currentTab}`).classList.remove('hidden'); cBtn.style.display = 'none'; render(currentTab, memory[currentTab]); };
-
-        // --- DELETE LOGIC (FIXED) ---
-        window.askDelete = (path, key) => {
-            deleteInfo = { path, key };
-            document.getElementById('custom-modal').style.display = 'flex';
-        };
-        window.closeModal = () => {
-            document.getElementById('custom-modal').style.display = 'none';
-            deleteInfo = null;
-        };
-        document.getElementById('confirm-del-btn').onclick = () => {
-            if(deleteInfo && uid) {
-                remove(ref(db, `users/${uid}/${deleteInfo.path}/${deleteInfo.key}`));
-                closeModal();
-            }
-        };
-
-        // --- IMPORT ---
-        document.getElementById('csv-file').addEventListener('change', function(e) {
-            if(!uid) return;
-            const file = e.target.files[0];
-            const reader = new FileReader();
-            reader.onload = function(evt) {
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                let added = 0, skipped = 0;
-                jsonData.forEach(row => {
-                    const site = String(row.name || "").trim(), user = String(row.username || "").trim(), pass = String(row.password || "").trim();
-                    if(site && pass) {
-                        const isDuplicate = Object.values(memory.passwords).some(item => item.site === site && item.user === user && item.pass === pass);
-                        if(!isDuplicate) {
-                            push(ref(db, `users/${uid}/passwords`), { site, user, pass, date: new Date().toLocaleDateString('en-GB'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
-                            added++;
-                        } else skipped++;
-                    }
-                });
-                alert(`Added: ${added}, Skipped: ${skipped}`);
-                e.target.value = '';
-            };
-            reader.readAsArrayBuffer(file);
-        });
-
-        // --- CORE ---
-        window.saveData = (path) => {
-            if(!uid) return;
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const date = new Date().toLocaleDateString('en-GB');
-            let obj = { time, date };
-            if(path === 'queries') { const el = document.getElementById('in-q'); if(!el.value.trim()) return; obj.val = el.value; el.value = ''; }
-            else if(path === 'notes') { const el = document.getElementById('in-n'); if(!el.value.trim()) return; obj.val = el.value; el.value = ''; }
-            else if(path === 'passwords') { const s = document.getElementById('p-s'), u = document.getElementById('p-u'), p = document.getElementById('p-p'); if(!s.value.trim()) return; obj.site = s.value; obj.user = u.value; obj.pass = p.value; s.value = ''; u.value = ''; p.value = ''; }
-            push(ref(db, `users/${uid}/${path}`), obj);
-        };
-
-        window.nav = (section, idx) => { currentTab = section; resetSearch(); document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx)); document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); document.getElementById(`sec-${section}`).classList.add('active'); document.getElementById('tab-mark').style.transform = `translateX(${idx * 100}%)`; };
-
+        // --- AUTH & SYNC ---
         setPersistence(auth, browserLocalPersistence).then(() => {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
@@ -266,29 +186,93 @@
 
         document.getElementById('btn-google').onclick = () => signInWithPopup(auth, provider);
 
+        // --- SEARCH ---
+        const sInput = document.getElementById('master-search');
+        const cBtn = document.getElementById('clear-search');
+        sInput.oninput = (e) => {
+            const term = e.target.value.toLowerCase();
+            const panel = document.getElementById(`panel-${currentTab}`);
+            if(term.length > 0) { panel.classList.add('hidden'); cBtn.style.display = 'block'; }
+            else { panel.classList.remove('hidden'); cBtn.style.display = 'none'; }
+            const filtered = {};
+            Object.keys(memory[currentTab]).forEach(k => { 
+                if(JSON.stringify(memory[currentTab][k]).toLowerCase().includes(term)) filtered[k] = memory[currentTab][k]; 
+            });
+            render(currentTab, filtered);
+        };
+        window.resetSearch = () => { sInput.value = ''; document.getElementById(`panel-${currentTab}`).classList.remove('hidden'); cBtn.style.display = 'none'; render(currentTab, memory[currentTab]); };
+
+        // --- DELETE (FIXED) ---
+        window.askDelete = (path, key) => {
+            deleteTarget = { path, key };
+            document.getElementById('custom-modal').style.display = 'flex';
+        };
+        window.closeModal = () => { document.getElementById('custom-modal').style.display = 'none'; };
+        document.getElementById('final-del-btn').onclick = () => {
+            if(deleteTarget && uid) {
+                remove(ref(db, `users/${uid}/${deleteTarget.path}/${deleteTarget.key}`));
+                closeModal();
+            }
+        };
+
+        // --- SAVE ---
+        window.saveData = (path) => {
+            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            const date = new Date().toLocaleDateString('en-GB');
+            let obj = { time, date };
+            if(path === 'queries') { const el = document.getElementById('in-q'); if(!el.value.trim()) return; obj.val = el.value; el.value = ''; }
+            else if(path === 'notes') { const el = document.getElementById('in-n'); if(!el.value.trim()) return; obj.val = el.value; el.value = ''; }
+            else if(path === 'passwords') { const s = document.getElementById('p-s'), u = document.getElementById('p-u'), p = document.getElementById('p-p'); if(!s.value.trim()) return; obj.site = s.value; obj.user = u.value; obj.pass = p.value; s.value = ''; u.value = ''; p.value = ''; }
+            push(ref(db, `users/${uid}/${path}`), obj);
+        };
+
+        // --- RENDER ---
         function render(path, data) {
             const list = document.getElementById(`list-${path}`);
-            if(!list) return; list.innerHTML = '';
+            list.innerHTML = '';
+            // Keys ko reverse karke render kar rahe hain
             Object.keys(data).reverse().forEach(key => {
                 const item = data[key];
                 const div = document.createElement('div'); div.className = 'bubble';
                 if(path === 'passwords') {
                     div.innerHTML = `<span class="pass-site"><i class="fas fa-lock"></i> ${item.site}</span>
-                        <div class="cred-box"><span>${item.user}</span><button class="copy-btn" onclick="cp_raw('${item.user}')"><i class="fas fa-copy"></i></button></div>
+                        <div class="cred-box"><span>${item.user}</span><button class="copy-btn" onclick="cp('${item.user}')"><i class="fas fa-copy"></i></button></div>
                         <div class="cred-box"><span id="p-${key}">••••••••</span><div style="display:flex; gap:10px;">
                         <button class="copy-btn" style="color:#aaa" onclick="sh('${key}','${item.pass}')"><i class="fas fa-eye"></i></button>
-                        <button class="copy-btn" onclick="cp_raw('${item.pass}')"><i class="fas fa-key"></i></button></div></div>
-                        <div class="b-footer"><span style="font-size:10px; color:#999">${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash-alt"></i> DELETE</div></div>`;
+                        <button class="copy-btn" onclick="cp('${item.pass}')"><i class="fas fa-key"></i></button></div></div>
+                        <div class="b-footer"><span>${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash-alt"></i> DELETE</div></div>`;
                 } else {
-                    div.innerHTML = `<div style="font-size:15px; line-height:1.4;">${item.val}</div><div class="b-footer"><span style="font-size:10px; color:#999">${item.date}</span>
+                    div.innerHTML = `<div style="font-size:15px;">${item.val}</div><div class="b-footer"><span>${item.date}</span>
                         <div class="btn-delete" onclick="askDelete('${path}','${key}')"><i class="fas fa-trash-alt"></i> DELETE</div></div>`;
                 }
                 list.appendChild(div);
             });
         }
+
+        // --- HELPERS ---
+        window.nav = (section, idx) => { currentTab = section; resetSearch(); document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx)); document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); document.getElementById(`sec-${section}`).classList.add('active'); document.getElementById('tab-mark').style.transform = `translateX(${idx * 100}%)`; };
         window.sh = (k, v) => { const e = document.getElementById(`p-${k}`); e.innerText = (e.innerText === '••••••••') ? v : '••••••••'; };
-        window.cp_raw = (v) => { navigator.clipboard.writeText(v); alert("Copied!"); };
+        window.cp = (v) => { navigator.clipboard.writeText(v); alert("Copied!"); };
         window.exportExcel = () => { XLSX.writeFile(XLSX.utils.book_append_sheet(XLSX.utils.book_new(), XLSX.utils.json_to_sheet(Object.values(memory[currentTab])), "Backup"), "GMS_Backup.xlsx"); };
+        
+        // CSV Import logic remains the same...
+        document.getElementById('csv-file').addEventListener('change', function(e) {
+            const reader = new FileReader();
+            reader.onload = (evt) => {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
+                jsonData.forEach(row => {
+                    const site = String(row.name || "").trim(), user = String(row.username || "").trim(), pass = String(row.password || "").trim();
+                    if(site && pass) {
+                        const isDuplicate = Object.values(memory.passwords).some(item => item.site === site && item.user === user && item.pass === pass);
+                        if(!isDuplicate) push(ref(db, `users/${uid}/passwords`), { site, user, pass, date: new Date().toLocaleDateString('en-GB'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
+                    }
+                });
+                e.target.value = '';
+            };
+            reader.readAsArrayBuffer(e.target.files[0]);
+        });
     </script>
 </body>
 </html>
