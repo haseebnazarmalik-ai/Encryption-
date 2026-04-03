@@ -4,127 +4,121 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
-    <meta http-equiv="Pragma" content="no-cache">
-    <meta http-equiv="Expires" content="0">
-    <title>GMS Tracker Pro V8.0</title>
+    <title>GMS Tracker Final V9.0</title>
     
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        :root { --wa-green: #075E54; --wa-teal: #128C7E; --wa-bg: #e5ddd5; --white: #ffffff; --danger: #ff4757; }
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; }
-        body { margin: 0; background: var(--wa-bg); overflow-x: hidden; -webkit-overflow-scrolling: touch; }
+        :root { --wa-green: #075E54; --wa-teal: #128C7E; --wa-bg: #e5ddd5; --danger: #ff4757; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Helvetica, sans-serif; }
+        body { margin: 0; background: var(--wa-bg); overflow-x: hidden; }
         
-        header { background: var(--wa-green); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; }
-        .u-info { display: flex; align-items: center; gap: 10px; }
-        #u-pic { width: 38px; height: 38px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: #ddd; }
+        header { background: var(--wa-green); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; height: 60px; }
+        .u-pic { width: 35px; height: 35px; border-radius: 50%; border: 1.5px solid white; object-fit: cover; }
         
         .tabs { display: flex; background: var(--wa-green); position: relative; }
-        .tab { flex: 1; text-align: center; padding: 15px 0; color: rgba(255,255,255,0.6); font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; }
+        .tab { flex: 1; text-align: center; padding: 15px 0; color: rgba(255,255,255,0.6); font-weight: 700; font-size: 13px; text-transform: uppercase; }
         .tab.active { color: white; }
-        .indicator { position: absolute; bottom: 0; left: 0; height: 4px; background: white; width: 33.33%; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .mark { position: absolute; bottom: 0; left: 0; height: 4px; background: white; width: 33.33%; transition: 0.3s; }
 
-        .search-box-wrap { background: white; padding: 10px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #ccc; }
-        .s-input-area { flex: 1; background: #f0f2f5; border-radius: 20px; padding: 5px 15px; display: flex; align-items: center; }
-        .s-input { border: none; background: transparent; width: 100%; padding: 8px; font-size: 15px; outline: none; }
+        .search-area { background: white; padding: 10px 15px; display: flex; gap: 10px; border-bottom: 1px solid #ddd; }
+        .s-box { flex: 1; background: #f0f2f5; border-radius: 20px; padding: 5px 15px; display: flex; align-items: center; }
+        .s-box input { border: none; background: transparent; width: 100%; padding: 8px; font-size: 14px; outline: none; }
 
-        .content { padding: 12px; padding-bottom: 100px; max-width: 600px; margin: 0 auto; }
+        .content { padding: 10px; max-width: 600px; margin: 0 auto; padding-bottom: 80px; }
         .page { display: none; }
         .page.active { display: block; }
         
-        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
-        .wa-inp { width: 100%; border: 1px solid #ddd; padding: 14px; border-radius: 10px; margin-bottom: 12px; font-size: 16px; background: #fff; }
-        .btn-main { width: 100%; background: var(--wa-teal); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 700; font-size: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-        .btn-main:active { transform: scale(0.98); background: var(--wa-green); }
+        .card { background: white; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .inp { width: 100%; border: 1px solid #ddd; padding: 12px; border-radius: 8px; margin-bottom: 10px; font-size: 16px; }
+        .btn { width: 100%; background: var(--wa-teal); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; }
+        .btn:active { background: var(--wa-green); }
 
-        .msg-bubble { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 5px solid var(--wa-teal); }
-        .b-title { font-weight: 700; color: var(--wa-green); margin-bottom: 5px; display: block; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
-        .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 11px; color: #777; }
-        .btn-del { color: var(--danger); font-weight: 700; background: #fff1f1; padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 11px; }
+        .bubble { background: white; padding: 15px; border-radius: 10px; margin-bottom: 10px; box-shadow: 0 1px 2px rgba(0,0,0,0.1); position: relative; }
+        .b-head { font-weight: 700; color: var(--wa-green); font-size: 16px; border-bottom: 1px solid #eee; padding-bottom: 5px; margin-bottom: 8px; display: block; }
+        .cred { background: #f8f9fa; border: 1px solid #eee; padding: 8px 10px; border-radius: 6px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; }
+        .b-foot { display: flex; justify-content: space-between; align-items: center; margin-top: 10px; font-size: 11px; color: #888; }
+        .del-link { color: var(--danger); font-weight: 700; background: #fff1f1; padding: 5px 10px; border-radius: 15px; cursor: pointer; }
 
-        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
-        .modal-body { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
-        
-        #login-overlay { position: fixed; inset: 0; background: #f0f2f5; z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #login-page { position: fixed; inset: 0; background: #f0f2f5; z-index: 5000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.7); display: none; align-items: center; justify-content: center; z-index: 4000; }
     </style>
 </head>
 <body>
 
-    <div id="login-overlay">
-        <i class="fab fa-whatsapp" style="font-size:70px; color:var(--wa-teal); margin-bottom:20px;"></i>
-        <h2 style="margin-bottom:30px;">GMS Tracker Pro</h2>
-        <button id="google-login" class="btn-main" style="width:80%; background:#4285F4;">Sign in with Google</button>
+    <div id="login-page" class="hidden">
+        <i class="fab fa-whatsapp" style="font-size:60px; color:var(--wa-teal); margin-bottom:20px;"></i>
+        <button id="do-login" class="btn" style="width:70%; background:#4285F4;">Sign in with Google</button>
     </div>
 
     <header>
         <div class="top-bar">
-            <span style="font-size:20px; font-weight:700;">GMS Tracker</span>
-            <div class="u-info">
-                <span id="u-name" style="font-size:13px; font-weight:600;">...</span>
-                <img id="u-pic" src="">
+            <span style="font-size:18px; font-weight:700;">GMS Tracker</span>
+            <div id="user-info" style="display:flex; align-items:center; gap:8px;">
+                <span id="u-name" style="font-size:12px;"></span>
+                <img id="u-pic" class="u-pic" src="">
             </div>
         </div>
         <div class="tabs">
-            <div class="tab active" onclick="moveTab('queries',0)">Queries</div>
-            <div class="tab" onclick="moveTab('passwords',1)">Passwords</div>
-            <div class="tab" onclick="moveTab('notes',2)">Notes</div>
-            <div id="tab-mark" class="indicator"></div>
+            <div class="tab active" onclick="tab('queries',0)">Queries</div>
+            <div class="tab" onclick="tab('passwords',1)">Passwords</div>
+            <div class="tab" onclick="tab('notes',2)">Notes</div>
+            <div id="tab-mark" class="mark"></div>
         </div>
     </header>
 
-    <div class="search-box-wrap">
-        <div class="s-input-area">
+    <div class="search-area">
+        <div class="s-box">
             <i class="fas fa-search" style="color:#888"></i>
-            <input type="text" id="live-search" class="s-input" placeholder="Live search...">
+            <input type="text" id="find" placeholder="Search data...">
         </div>
-        <button onclick="exportToExcel()" style="background:#1d6f42; color:white; border:none; border-radius:50%; width:40px; height:40px;"><i class="fas fa-file-excel"></i></button>
+        <button onclick="exportSheet()" style="background:#1d6f42; color:white; border:none; border-radius:50%; width:35px; height:35px;"><i class="fas fa-file-excel"></i></button>
     </div>
 
     <div class="content">
-        <div id="queries-page" class="page active">
+        <div id="p-queries" class="page active">
             <div class="card">
-                <input type="text" id="q-input" class="wa-inp" placeholder="New query...">
-                <button class="btn-main" onclick="save('queries')">SAVE CLOUD</button>
+                <input type="text" id="q-in" class="inp" placeholder="Query content...">
+                <button class="btn" onclick="send('queries')">SAVE TO CLOUD</button>
             </div>
-            <div id="render-queries"></div>
+            <div id="box-queries"></div>
         </div>
 
-        <div id="passwords-page" class="page">
+        <div id="p-passwords" class="page">
             <div class="card">
-                <input type="text" id="p-site" class="wa-inp" placeholder="Site Name">
-                <input type="text" id="p-user" class="wa-inp" placeholder="Username">
-                <input type="text" id="p-pass" class="wa-inp" placeholder="Password">
-                <button class="btn-main" onclick="save('passwords')">SECURE SAVE</button>
+                <input type="text" id="ps-site" class="inp" placeholder="Site Name">
+                <input type="text" id="ps-user" class="inp" placeholder="Username">
+                <input type="text" id="ps-pass" class="inp" placeholder="Password">
+                <button class="btn" onclick="send('passwords')">SAVE PASSWORD</button>
             </div>
-            <div id="render-passwords"></div>
+            <div id="box-passwords"></div>
         </div>
 
-        <div id="notes-page" class="page">
+        <div id="p-notes" class="page">
             <div class="card">
-                <textarea id="n-input" class="wa-inp" style="height:100px" placeholder="Write technical notes..."></textarea>
-                <button class="btn-main" onclick="save('notes')">ADD NOTE</button>
+                <textarea id="n-in" class="inp" style="height:80px" placeholder="Technical notes..."></textarea>
+                <button class="btn" onclick="send('notes')">ADD NOTE</button>
             </div>
-            <div id="render-notes"></div>
+            <div id="box-notes"></div>
         </div>
     </div>
 
     <div id="modal">
-        <div class="modal-body">
-            <h3>Confirm Delete?</h3>
-            <p>This will be removed permanently from Firebase.</p>
-            <div style="display:flex; gap:10px; margin-top:20px;">
-                <button class="btn-main" style="background:#ccc; color:#333;" onclick="closeDel()">No</button>
-                <button id="btn-confirm-del" class="btn-main" style="background:var(--danger);">Yes, Delete</button>
+        <div style="background:white; padding:25px; border-radius:15px; text-align:center; width:80%;">
+            <h3>Delete?</h3>
+            <div style="display:flex; gap:10px; margin-top:15px;">
+                <button class="btn" style="background:#ccc; color:black;" onclick="closeM()">NO</button>
+                <button id="confirm-del" class="btn" style="background:var(--danger);">YES</button>
             </div>
         </div>
     </div>
 
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove, set, goOnline } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
-        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+        import { initializeApp } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-app.js";
+        import { getDatabase, ref, push, onValue, remove, set, goOnline } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-database.js";
+        import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/9.6.1/firebase-auth.js";
 
         const firebaseConfig = {
             apiKey: "AIzaSyBt8gP3y2M3tjabKwjNfiotgqmxmhIq7cI",
@@ -140,92 +134,105 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
-        
-        goOnline(db); // Mobile force connection
 
-        let uid, activeTab = 'queries', delObj = null;
-        let masterData = { queries:{}, passwords:{}, notes:{} };
+        let uid, curTab = 'queries', delRef = null;
+        let master = { queries:{}, passwords:{}, notes:{} };
 
-        window.moveTab = (t, i) => {
-            activeTab = t;
+        // Global Helpers
+        window.tab = (t, i) => {
+            curTab = t;
             document.querySelectorAll('.tab').forEach((el,idx)=>el.classList.toggle('active', idx===i));
             document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
-            document.getElementById(`${t}-page`).classList.add('active');
+            document.getElementById(`p-${t}`).classList.add('active');
             document.getElementById('tab-mark').style.transform = `translateX(${i*100}%)`;
-            window.scrollTo(0,0);
         };
 
-        window.closeDel = () => document.getElementById('modal').style.display = 'none';
+        window.closeM = () => document.getElementById('modal').style.display='none';
+        window.copy = (v) => { navigator.clipboard.writeText(v); alert("Copied!"); };
+        window.toggleP = (id, v) => { const e = document.getElementById(id); e.innerText = (e.innerText==='••••••••') ? v : '••••••••'; };
 
-        window.save = async (path) => {
-            if(!uid) return;
-            const stamp = new Date().toLocaleString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
-            let payload = { stamp };
-
-            if(path === 'queries') { payload.val = document.getElementById('q-input').value; document.getElementById('q-input').value=''; }
-            else if(path === 'notes') { payload.val = document.getElementById('n-input').value; document.getElementById('n-input').value=''; }
+        // Save Function
+        window.send = async (path) => {
+            const time = new Date().toLocaleString('en-GB', { day:'2-digit', month:'2-digit', hour:'2-digit', minute:'2-digit' });
+            let data = { time };
+            if(path === 'queries') { data.val = document.getElementById('q-in').value; document.getElementById('q-in').value=''; }
+            else if(path === 'notes') { data.val = document.getElementById('n-in').value; document.getElementById('n-in').value=''; }
             else { 
-                payload.site = document.getElementById('p-site').value; payload.user = document.getElementById('p-user').value; payload.pass = document.getElementById('p-pass').value;
-                document.getElementById('p-site').value=document.getElementById('p-user').value=document.getElementById('p-pass').value='';
+                data.site = document.getElementById('ps-site').value; data.user = document.getElementById('ps-user').value; data.pass = document.getElementById('ps-pass').value;
+                document.getElementById('ps-site').value=document.getElementById('ps-user').value=document.getElementById('ps-pass').value='';
             }
-            if(payload.val || payload.site) await push(ref(db, `users/${uid}/${path}`), payload);
+            if(data.val || data.site) await push(ref(db, `users/${uid}/${path}`), data);
         };
 
-        window.askDel = (p, k) => { delObj = {p, k}; document.getElementById('modal').style.display = 'flex'; };
+        window.ask = (p, k) => { delRef={p, k}; document.getElementById('modal').style.display='flex'; };
 
-        document.getElementById('btn-confirm-del').onclick = async () => {
-            if(delObj) { await remove(ref(db, `users/${uid}/${delObj.p}/${delObj.k}`)); closeDel(); }
+        document.getElementById('confirm-del').onclick = async () => {
+            if(delRef) { await remove(ref(db, `users/${uid}/${delRef.p}/${delRef.k}`)); closeM(); }
         };
 
+        // Auth
         onAuthStateChanged(auth, (user) => {
             if(user) {
                 uid = user.uid;
                 document.getElementById('u-name').innerText = user.displayName.split(' ')[0];
                 document.getElementById('u-pic').src = user.photoURL;
-                document.getElementById('login-overlay').classList.add('hidden');
-                initSync();
+                document.getElementById('login-page').classList.add('hidden');
+                goOnline(db);
+                sync();
             } else {
-                document.getElementById('login-overlay').classList.remove('hidden');
+                document.getElementById('login-page').classList.remove('hidden');
             }
         });
 
-        document.getElementById('google-login').onclick = () => signInWithPopup(auth, provider);
+        document.getElementById('do-login').onclick = () => signInWithPopup(auth, provider);
 
-        function initSync() {
+        function sync() {
             ['queries','passwords','notes'].forEach(p => {
                 onValue(ref(db, `users/${uid}/${p}`), (snap) => {
-                    const val = snap.val() || {};
-                    masterData[p] = val;
-                    draw(p, val);
+                    const d = snap.val() || {};
+                    master[p] = d;
+                    render(p, d);
                 });
             });
         }
 
-        function draw(path, data) {
-            const box = document.getElementById(`render-${path}`);
+        function render(path, data) {
+            const box = document.getElementById(`box-${path}`);
             box.innerHTML = '';
-            Object.keys(data).reverse().forEach(key => {
-                const item = data[key];
+            Object.keys(data).reverse().forEach(k => {
+                const item = data[k];
                 const div = document.createElement('div');
-                div.className = 'msg-bubble';
+                div.className = 'bubble';
                 if(path === 'passwords') {
-                    div.innerHTML = `<span class="b-title">${item.site}</span>
-                        <div style="font-size:14px; margin: 5px 0;"><b>U:</b> ${item.user} | <b>P:</b> ${item.pass}</div>
-                        <div class="b-footer"><span>${item.stamp}</span><span class="btn-del" onclick="askDel('passwords','${key}')">DELETE</span></div>`;
+                    div.innerHTML = `<span class="b-head">${item.site}</span>
+                        <div class="cred"><span>${item.user}</span><i class="fas fa-copy" onclick="copy('${item.user}')"></i></div>
+                        <div class="cred"><span id="v-${k}">••••••••</span><div>
+                        <i class="fas fa-eye" style="margin-right:10px" onclick="toggleP('v-${k}','${item.pass}')"></i>
+                        <i class="fas fa-key" onclick="copy('${item.pass}')"></i></div></div>
+                        <div class="b-foot"><span>${item.time}</span><span class="del-link" onclick="ask('passwords','${k}')">DELETE</span></div>`;
                 } else {
-                    div.innerHTML = `<div style="font-size:15px; line-height:1.5;">${item.val}</div>
-                        <div class="b-footer"><span>${item.stamp}</span><span class="btn-del" onclick="askDel('${path}','${key}')">DELETE</span></div>`;
+                    div.innerHTML = `<div style="font-size:15px; line-height:1.4;">${item.val}</div>
+                        <div class="b-foot"><span>${item.time}</span><span class="del-link" onclick="ask('${path}','${k}')">DELETE</span></div>`;
                 }
                 box.appendChild(div);
             });
         }
 
-        window.exportToExcel = () => {
-            const list = Object.keys(masterData[activeTab]).map(k => masterData[activeTab][k]);
+        window.exportSheet = () => {
+            const list = Object.keys(master[curTab]).map(k => master[curTab][k]);
             const ws = XLSX.utils.json_to_sheet(list);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "GMS_Data");
-            XLSX.writeFile(wb, `GMS_${activeTab}.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "Backup");
+            XLSX.writeFile(wb, `GMS_${curTab}.xlsx`);
+        };
+
+        document.getElementById('find').oninput = (e) => {
+            const term = e.target.value.toLowerCase();
+            const filtered = {};
+            Object.keys(master[curTab]).forEach(k => {
+                if(JSON.stringify(master[curTab][k]).toLowerCase().includes(term)) filtered[k] = master[curTab][k];
+            });
+            render(curTab, filtered);
         };
     </script>
 </body>
