@@ -58,9 +58,8 @@
         .copy-btn { background: none; border: none; color: var(--wa-teal); cursor: pointer; font-size: 16px; padding: 5px; }
 
         .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f1f1; }
-        .btn-delete { color: var(--danger); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+        .btn-delete { color: var(--danger); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; padding: 5px; }
 
-        /* --- MODERN DELETE MODAL --- */
         #custom-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
         .modal-box { background: white; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: popIn 0.2s ease-out; }
         @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
@@ -142,12 +141,12 @@
 
     <div id="custom-modal">
         <div class="modal-box">
-            <div style="font-size: 45px; color: var(--danger); margin-bottom: 15px;"><i class="fas fa-exclamation-circle"></i></div>
+            <div style="font-size: 45px; color: var(--danger); margin-bottom: 15px;"><i class="fas fa-trash-alt"></i></div>
             <h3 style="margin:0; color: #333;">Delete Record?</h3>
-            <p style="color: #666; font-size: 14px; margin: 10px 0;">This action cannot be undone.</p>
+            <p style="color: #666; font-size: 14px; margin: 10px 0;">This will remove it permanently.</p>
             <div class="modal-btns">
                 <button class="m-btn m-cancel" onclick="closeModal()">CANCEL</button>
-                <button id="modal-confirm-btn" class="m-btn m-confirm">DELETE</button>
+                <button id="confirm-del-btn" class="m-btn m-confirm">DELETE</button>
             </div>
         </div>
     </div>
@@ -175,35 +174,39 @@
         let uid, currentTab = 'queries', deleteInfo = null;
         let memory = { queries: {}, passwords: {}, notes: {} };
 
-        // --- SEARCH LOGIC ---
+        // --- SEARCH ---
         const sInput = document.getElementById('master-search');
         const cBtn = document.getElementById('clear-search');
-
         sInput.oninput = (e) => {
             const term = e.target.value.toLowerCase();
             const panel = document.getElementById(`panel-${currentTab}`);
-            if(term.length > 0) {
-                panel.classList.add('hidden');
-                cBtn.style.display = 'block';
-            } else {
-                panel.classList.remove('hidden');
-                cBtn.style.display = 'none';
-            }
+            if(term.length > 0) { panel.classList.add('hidden'); cBtn.style.display = 'block'; }
+            else { panel.classList.remove('hidden'); cBtn.style.display = 'none'; }
             const filtered = {};
             Object.keys(memory[currentTab]).forEach(k => { 
                 if(JSON.stringify(memory[currentTab][k]).toLowerCase().includes(term)) filtered[k] = memory[currentTab][k]; 
             });
             render(currentTab, filtered);
         };
+        window.resetSearch = () => { sInput.value = ''; document.getElementById(`panel-${currentTab}`).classList.remove('hidden'); cBtn.style.display = 'none'; render(currentTab, memory[currentTab]); };
 
-        window.resetSearch = () => {
-            sInput.value = '';
-            document.getElementById(`panel-${currentTab}`).classList.remove('hidden');
-            cBtn.style.display = 'none';
-            render(currentTab, memory[currentTab]);
+        // --- DELETE LOGIC (FIXED) ---
+        window.askDelete = (path, key) => {
+            deleteInfo = { path, key };
+            document.getElementById('custom-modal').style.display = 'flex';
+        };
+        window.closeModal = () => {
+            document.getElementById('custom-modal').style.display = 'none';
+            deleteInfo = null;
+        };
+        document.getElementById('confirm-del-btn').onclick = () => {
+            if(deleteInfo && uid) {
+                remove(ref(db, `users/${uid}/${deleteInfo.path}/${deleteInfo.key}`));
+                closeModal();
+            }
         };
 
-        // --- IMPORT CSV WITH 3-WAY DUPLICATE CHECK ---
+        // --- IMPORT ---
         document.getElementById('csv-file').addEventListener('change', function(e) {
             if(!uid) return;
             const file = e.target.files[0];
@@ -213,71 +216,35 @@
                 const workbook = XLSX.read(data, {type: 'array'});
                 const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
                 let added = 0, skipped = 0;
-
                 jsonData.forEach(row => {
-                    const site = String(row.name || "").trim();
-                    const user = String(row.username || "").trim();
-                    const pass = String(row.password || "").trim();
-
+                    const site = String(row.name || "").trim(), user = String(row.username || "").trim(), pass = String(row.password || "").trim();
                     if(site && pass) {
-                        // Check if Site, User AND Pass ALL match
-                        const isDuplicate = Object.values(memory.passwords).some(item => 
-                            item.site === site && item.user === user && item.pass === pass
-                        );
-
+                        const isDuplicate = Object.values(memory.passwords).some(item => item.site === site && item.user === user && item.pass === pass);
                         if(!isDuplicate) {
-                            push(ref(db, `users/${uid}/passwords`), {
-                                site, user, pass,
-                                date: new Date().toLocaleDateString('en-GB'),
-                                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                            });
+                            push(ref(db, `users/${uid}/passwords`), { site, user, pass, date: new Date().toLocaleDateString('en-GB'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
                             added++;
-                        } else {
-                            skipped++;
-                        }
+                        } else skipped++;
                     }
                 });
-                alert(`Import Complete!\nAdded: ${added}\nSkipped (Duplicates): ${skipped}`);
+                alert(`Added: ${added}, Skipped: ${skipped}`);
                 e.target.value = '';
             };
             reader.readAsArrayBuffer(file);
         });
 
-        // --- CORE FUNCTIONS ---
+        // --- CORE ---
         window.saveData = (path) => {
             if(!uid) return;
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const date = new Date().toLocaleDateString('en-GB');
             let obj = { time, date };
-
-            if(path === 'queries') {
-                const el = document.getElementById('in-q'); if(!el.value.trim()) return;
-                obj.val = el.value; el.value = '';
-            } else if(path === 'notes') {
-                const el = document.getElementById('in-n'); if(!el.value.trim()) return;
-                obj.val = el.value; el.value = '';
-            } else if(path === 'passwords') {
-                const s = document.getElementById('p-s'), u = document.getElementById('p-u'), p = document.getElementById('p-p');
-                if(!s.value.trim()) return;
-                obj.site = s.value; obj.user = u.value; obj.pass = p.value;
-                s.value = ''; u.value = ''; p.value = '';
-            }
+            if(path === 'queries') { const el = document.getElementById('in-q'); if(!el.value.trim()) return; obj.val = el.value; el.value = ''; }
+            else if(path === 'notes') { const el = document.getElementById('in-n'); if(!el.value.trim()) return; obj.val = el.value; el.value = ''; }
+            else if(path === 'passwords') { const s = document.getElementById('p-s'), u = document.getElementById('p-u'), p = document.getElementById('p-p'); if(!s.value.trim()) return; obj.site = s.value; obj.user = u.value; obj.pass = p.value; s.value = ''; u.value = ''; p.value = ''; }
             push(ref(db, `users/${uid}/${path}`), obj);
         };
 
-        window.nav = (section, idx) => {
-            currentTab = section; resetSearch();
-            document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx));
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(`sec-${section}`).classList.add('active');
-            document.getElementById('tab-mark').style.transform = `translateX(${idx * 100}%)`;
-        };
-
-        window.askDelete = (p, k) => { deleteInfo = { path: p, key: k }; document.getElementById('custom-modal').style.display = 'flex'; };
-        window.closeModal = () => document.getElementById('custom-modal').style.display = 'none';
-        document.getElementById('modal-confirm-btn').onclick = () => {
-            if(deleteInfo) { remove(ref(db, `users/${uid}/${deleteInfo.path}/${deleteInfo.key}`)); closeModal(); }
-        };
+        window.nav = (section, idx) => { currentTab = section; resetSearch(); document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx)); document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); document.getElementById(`sec-${section}`).classList.add('active'); document.getElementById('tab-mark').style.transform = `translateX(${idx * 100}%)`; };
 
         setPersistence(auth, browserLocalPersistence).then(() => {
             onAuthStateChanged(auth, (user) => {
@@ -293,9 +260,7 @@
                             render(path, memory[path]);
                         });
                     });
-                } else {
-                    document.getElementById('login-screen').classList.remove('hidden');
-                }
+                } else document.getElementById('login-screen').classList.remove('hidden');
             });
         });
 
@@ -306,31 +271,24 @@
             if(!list) return; list.innerHTML = '';
             Object.keys(data).reverse().forEach(key => {
                 const item = data[key];
-                const div = document.createElement('div');
-                div.className = 'bubble';
+                const div = document.createElement('div'); div.className = 'bubble';
                 if(path === 'passwords') {
                     div.innerHTML = `<span class="pass-site"><i class="fas fa-lock"></i> ${item.site}</span>
                         <div class="cred-box"><span>${item.user}</span><button class="copy-btn" onclick="cp_raw('${item.user}')"><i class="fas fa-copy"></i></button></div>
                         <div class="cred-box"><span id="p-${key}">••••••••</span><div style="display:flex; gap:10px;">
                         <button class="copy-btn" style="color:#aaa" onclick="sh('${key}','${item.pass}')"><i class="fas fa-eye"></i></button>
                         <button class="copy-btn" onclick="cp_raw('${item.pass}')"><i class="fas fa-key"></i></button></div></div>
-                        <div class="b-footer"><span style="font-size:10px; color:#999">${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
+                        <div class="b-footer"><span style="font-size:10px; color:#999">${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash-alt"></i> DELETE</div></div>`;
                 } else {
                     div.innerHTML = `<div style="font-size:15px; line-height:1.4;">${item.val}</div><div class="b-footer"><span style="font-size:10px; color:#999">${item.date}</span>
-                        <div class="btn-delete" onclick="askDelete('${path}','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
+                        <div class="btn-delete" onclick="askDelete('${path}','${key}')"><i class="fas fa-trash-alt"></i> DELETE</div></div>`;
                 }
                 list.appendChild(div);
             });
         }
-
         window.sh = (k, v) => { const e = document.getElementById(`p-${k}`); e.innerText = (e.innerText === '••••••••') ? v : '••••••••'; };
         window.cp_raw = (v) => { navigator.clipboard.writeText(v); alert("Copied!"); };
-        window.exportExcel = () => {
-            const ws = XLSX.utils.json_to_sheet(Object.values(memory[currentTab]));
-            const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "Backup");
-            XLSX.writeFile(wb, `GMS_Backup.xlsx`);
-        };
+        window.exportExcel = () => { XLSX.writeFile(XLSX.utils.book_append_sheet(XLSX.utils.book_new(), XLSX.utils.json_to_sheet(Object.values(memory[currentTab])), "Backup"), "GMS_Backup.xlsx"); };
     </script>
 </body>
 </html>
