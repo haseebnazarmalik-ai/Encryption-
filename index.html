@@ -3,154 +3,120 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GMS Tracker | Ultra Fast V6.0</title>
+    <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+    <meta http-equiv="Pragma" content="no-cache">
+    <meta http-equiv="Expires" content="0">
+    <title>GMS Tracker Pro V8.0</title>
     
-    <meta name="theme-color" content="#075E54">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
     <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 
     <style>
-        :root {
-            --wa-green: #075E54;
-            --wa-teal: #128C7E;
-            --wa-bg: #e5ddd5;
-            --white: #ffffff;
-            --text-main: #111b21;
-            --text-muted: #667781;
-            --danger: #ff4757;
-            --shadow: 0 2px 5px rgba(0,0,0,0.1);
-        }
-
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; touch-action: manipulation; }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0; padding: 0;
-            background-color: var(--wa-bg);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
-
-        .hidden { display: none !important; }
-
-        header { background: var(--wa-green); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; height: 60px; }
+        :root { --wa-green: #075E54; --wa-teal: #128C7E; --wa-bg: #e5ddd5; --white: #ffffff; --danger: #ff4757; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; font-family: 'Segoe UI', Helvetica, Arial, sans-serif; }
+        body { margin: 0; background: var(--wa-bg); overflow-x: hidden; -webkit-overflow-scrolling: touch; }
         
-        .user-profile { display: flex; align-items: center; gap: 10px; }
-        #u-name { font-size: 14px; font-weight: 500; }
-        #u-pic { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid white; background: #eee; object-fit: cover; }
-
-        .tab-strip { display: flex; background: var(--wa-green); position: relative; }
-        .tab-item { flex: 1; text-align: center; padding: 16px 0; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; cursor: pointer; }
-        .tab-item.active { color: white; }
-        .tab-indicator { position: absolute; bottom: 0; left: 0; height: 4px; background: white; width: 33.33%; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
-
-        .search-area { background: white; padding: 12px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .search-wrapper { flex: 1; display: flex; align-items: center; background: #f0f2f5; padding: 2px 15px; border-radius: 30px; }
-        .search-box { flex: 1; background: transparent; border: none; padding: 10px; font-size: 14px; }
-
-        .content-section { display: none; width: 100%; max-width: 800px; margin: 0 auto; padding: 10px; padding-bottom: 80px; }
-        .content-section.active { display: block; }
-
-        .input-panel { background: white; padding: 15px; box-shadow: var(--shadow); margin: 10px 0; border-radius: 15px; }
-        .wa-input { width: 100%; border: 1px solid #e9edef; padding: 12px; border-radius: 8px; font-size: 16px; margin-bottom: 10px; }
+        header { background: var(--wa-green); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 10px rgba(0,0,0,0.2); }
+        .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 12px 16px; }
+        .u-info { display: flex; align-items: center; gap: 10px; }
+        #u-pic { width: 38px; height: 38px; border-radius: 50%; border: 2px solid white; object-fit: cover; background: #ddd; }
         
-        .send-btn { 
-            width: 100%; background: var(--wa-teal); color: white; border: none; 
-            padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer;
-        }
-        .send-btn:active { background: var(--wa-green); opacity: 0.8; }
+        .tabs { display: flex; background: var(--wa-green); position: relative; }
+        .tab { flex: 1; text-align: center; padding: 15px 0; color: rgba(255,255,255,0.6); font-weight: 700; font-size: 13px; text-transform: uppercase; cursor: pointer; }
+        .tab.active { color: white; }
+        .indicator { position: absolute; bottom: 0; left: 0; height: 4px; background: white; width: 33.33%; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
-        .bubble { width: 98%; margin: 10px auto; padding: 15px; border-radius: 12px; box-shadow: var(--shadow); background: var(--white); position: relative; }
-        .pass-site { font-weight: 700; color: var(--wa-green); display: block; font-size: 17px; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px;}
+        .search-box-wrap { background: white; padding: 10px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid #ccc; }
+        .s-input-area { flex: 1; background: #f0f2f5; border-radius: 20px; padding: 5px 15px; display: flex; align-items: center; }
+        .s-input { border: none; background: transparent; width: 100%; padding: 8px; font-size: 15px; outline: none; }
+
+        .content { padding: 12px; padding-bottom: 100px; max-width: 600px; margin: 0 auto; }
+        .page { display: none; }
+        .page.active { display: block; }
         
-        .cred-box { background: #f8f9fa; border-radius: 8px; padding: 10px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; }
-        .copy-btn { background: none; border: none; color: var(--wa-teal); cursor: pointer; font-size: 20px; padding: 8px; }
+        .card { background: white; padding: 15px; border-radius: 15px; box-shadow: 0 2px 5px rgba(0,0,0,0.1); margin-bottom: 15px; }
+        .wa-inp { width: 100%; border: 1px solid #ddd; padding: 14px; border-radius: 10px; margin-bottom: 12px; font-size: 16px; background: #fff; }
+        .btn-main { width: 100%; background: var(--wa-teal); color: white; border: none; padding: 15px; border-radius: 10px; font-weight: 700; font-size: 15px; box-shadow: 0 2px 4px rgba(0,0,0,0.2); }
+        .btn-main:active { transform: scale(0.98); background: var(--wa-green); }
 
-        .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f1f1f1; }
-        .btn-delete { background: #fff5f5; color: var(--danger); border: 1px solid #ffe3e3; padding: 10px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; }
+        .msg-bubble { background: white; padding: 15px; border-radius: 12px; margin-bottom: 10px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); border-left: 5px solid var(--wa-teal); }
+        .b-title { font-weight: 700; color: var(--wa-green); margin-bottom: 5px; display: block; border-bottom: 1px solid #f0f0f0; padding-bottom: 5px; }
+        .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; font-size: 11px; color: #777; }
+        .btn-del { color: var(--danger); font-weight: 700; background: #fff1f1; padding: 6px 12px; border-radius: 20px; text-decoration: none; font-size: 11px; }
 
-        #custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; display: none; align-items: flex-end; }
-        .modal-box { background: white; width: 100%; padding: 25px; border-radius: 25px 25px 0 0; animation: slideUp 0.2s ease-out; text-align: center; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-btns { display: flex; gap: 15px; margin-top: 25px; }
-        .m-btn { flex: 1; padding: 16px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; }
-        .m-confirm { background: var(--danger); color: white; }
-        .m-cancel { background: #f0f2f5; color: var(--text-main); }
-
-        #login-screen { position: fixed; inset: 0; background: #f0f2f5; z-index: 11000; display: flex; justify-content: center; align-items: center; }
+        #modal { position: fixed; inset: 0; background: rgba(0,0,0,0.8); display: none; align-items: center; justify-content: center; z-index: 2000; padding: 20px; }
+        .modal-body { background: white; padding: 25px; border-radius: 20px; width: 100%; max-width: 400px; text-align: center; }
+        
+        #login-overlay { position: fixed; inset: 0; background: #f0f2f5; z-index: 3000; display: flex; flex-direction: column; align-items: center; justify-content: center; }
     </style>
 </head>
 <body>
 
-    <div id="login-screen" class="hidden">
-        <div style="background:white; padding:40px; border-radius:24px; text-align:center; width:85%; max-width:400px;">
-            <i class="fab fa-whatsapp" style="font-size:60px; color:var(--wa-teal);"></i>
-            <h2 style="margin: 20px 0;">GMS Tracker</h2>
-            <button id="btn-google" class="send-btn" style="background:#4285F4;">SIGN IN WITH GOOGLE</button>
+    <div id="login-overlay">
+        <i class="fab fa-whatsapp" style="font-size:70px; color:var(--wa-teal); margin-bottom:20px;"></i>
+        <h2 style="margin-bottom:30px;">GMS Tracker Pro</h2>
+        <button id="google-login" class="btn-main" style="width:80%; background:#4285F4;">Sign in with Google</button>
+    </div>
+
+    <header>
+        <div class="top-bar">
+            <span style="font-size:20px; font-weight:700;">GMS Tracker</span>
+            <div class="u-info">
+                <span id="u-name" style="font-size:13px; font-weight:600;">...</span>
+                <img id="u-pic" src="">
+            </div>
+        </div>
+        <div class="tabs">
+            <div class="tab active" onclick="moveTab('queries',0)">Queries</div>
+            <div class="tab" onclick="moveTab('passwords',1)">Passwords</div>
+            <div class="tab" onclick="moveTab('notes',2)">Notes</div>
+            <div id="tab-mark" class="indicator"></div>
+        </div>
+    </header>
+
+    <div class="search-box-wrap">
+        <div class="s-input-area">
+            <i class="fas fa-search" style="color:#888"></i>
+            <input type="text" id="live-search" class="s-input" placeholder="Live search...">
+        </div>
+        <button onclick="exportToExcel()" style="background:#1d6f42; color:white; border:none; border-radius:50%; width:40px; height:40px;"><i class="fas fa-file-excel"></i></button>
+    </div>
+
+    <div class="content">
+        <div id="queries-page" class="page active">
+            <div class="card">
+                <input type="text" id="q-input" class="wa-inp" placeholder="New query...">
+                <button class="btn-main" onclick="save('queries')">SAVE CLOUD</button>
+            </div>
+            <div id="render-queries"></div>
+        </div>
+
+        <div id="passwords-page" class="page">
+            <div class="card">
+                <input type="text" id="p-site" class="wa-inp" placeholder="Site Name">
+                <input type="text" id="p-user" class="wa-inp" placeholder="Username">
+                <input type="text" id="p-pass" class="wa-inp" placeholder="Password">
+                <button class="btn-main" onclick="save('passwords')">SECURE SAVE</button>
+            </div>
+            <div id="render-passwords"></div>
+        </div>
+
+        <div id="notes-page" class="page">
+            <div class="card">
+                <textarea id="n-input" class="wa-inp" style="height:100px" placeholder="Write technical notes..."></textarea>
+                <button class="btn-main" onclick="save('notes')">ADD NOTE</button>
+            </div>
+            <div id="render-notes"></div>
         </div>
     </div>
 
-    <div id="app-ui">
-        <header>
-            <div class="top-bar">
-                <div style="font-size: 20px; font-weight: 700;">GMS Tracker</div>
-                <div class="user-profile">
-                    <span id="u-name">User</span>
-                    <img id="u-pic" src="" alt="">
-                </div>
-            </div>
-            <div class="tab-strip">
-                <div class="tab-item active" onclick="nav('queries', 0)">Queries</div>
-                <div class="tab-item" onclick="nav('passwords', 1)">Passwords</div>
-                <div class="tab-item" onclick="nav('notes', 2)">Notes</div>
-                <div id="tab-mark" class="tab-indicator"></div>
-            </div>
-        </header>
-
-        <div class="search-area">
-            <div class="search-wrapper">
-                <i class="fas fa-search" style="color:var(--text-muted);"></i>
-                <input type="text" id="master-search" class="search-box" placeholder="Quick Search...">
-            </div>
-            <button onclick="exportExcel()" style="border:none; background:#1d6f42; color:white; border-radius:50%; width:40px; height:40px;"><i class="fas fa-file-excel"></i></button>
-        </div>
-
-        <div id="sec-queries" class="content-section active">
-            <div class="input-panel">
-                <input type="text" id="in-q" class="wa-input" placeholder="Type query here...">
-                <button class="send-btn" id="btn-q-save">SAVE DATA</button>
-            </div>
-            <div id="list-queries"></div>
-        </div>
-
-        <div id="sec-passwords" class="content-section">
-            <div class="input-panel">
-                <input type="text" id="p-s" class="wa-input" placeholder="Site Name">
-                <input type="text" id="p-u" class="wa-input" placeholder="Username">
-                <input type="text" id="p-p" class="wa-input" placeholder="Password">
-                <button class="send-btn" id="btn-p-save">SAVE PASSWORD</button>
-            </div>
-            <div id="list-passwords"></div>
-        </div>
-
-        <div id="sec-notes" class="content-section">
-            <div class="input-panel">
-                <textarea id="in-n" class="wa-input" style="height:100px; resize:none;" placeholder="Write notes..."></textarea>
-                <button class="send-btn" id="btn-n-save">SAVE NOTE</button>
-            </div>
-            <div id="list-notes"></div>
-        </div>
-    </div>
-
-    <div id="custom-modal" onclick="closeModal()">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <div style="font-size: 40px; color: var(--danger); margin-bottom: 10px;"><i class="fas fa-trash-can"></i></div>
-            <h3 style="margin:0;">Confirm Delete?</h3>
-            <div class="modal-btns">
-                <button class="m-btn m-cancel" onclick="closeModal()">CANCEL</button>
-                <button id="modal-confirm-btn" class="m-btn m-confirm">DELETE</button>
+    <div id="modal">
+        <div class="modal-body">
+            <h3>Confirm Delete?</h3>
+            <p>This will be removed permanently from Firebase.</p>
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button class="btn-main" style="background:#ccc; color:#333;" onclick="closeDel()">No</button>
+                <button id="btn-confirm-del" class="btn-main" style="background:var(--danger);">Yes, Delete</button>
             </div>
         </div>
     </div>
@@ -175,133 +141,91 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
         
-        goOnline(db); // Mobile connection force online
+        goOnline(db); // Mobile force connection
 
-        let uid, currentTab = 'queries', deleteInfo = null;
-        let memory = { queries: {}, passwords: {}, notes: {} };
+        let uid, activeTab = 'queries', delObj = null;
+        let masterData = { queries:{}, passwords:{}, notes:{} };
 
-        // GLOBAL WINDOW FUNCTIONS
-        window.nav = (section, idx) => {
-            currentTab = section;
-            document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx));
-            document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
-            document.getElementById(`sec-${section}`).classList.add('active');
-            document.getElementById('tab-mark').style.transform = `translateX(${idx * 100}%)`;
+        window.moveTab = (t, i) => {
+            activeTab = t;
+            document.querySelectorAll('.tab').forEach((el,idx)=>el.classList.toggle('active', idx===i));
+            document.querySelectorAll('.page').forEach(el=>el.classList.remove('active'));
+            document.getElementById(`${t}-page`).classList.add('active');
+            document.getElementById('tab-mark').style.transform = `translateX(${i*100}%)`;
+            window.scrollTo(0,0);
         };
 
-        window.closeModal = () => document.getElementById('custom-modal').style.display = 'none';
+        window.closeDel = () => document.getElementById('modal').style.display = 'none';
 
-        window.askDelete = (p, k) => { 
-            deleteInfo = { path: p, key: k }; 
-            document.getElementById('custom-modal').style.display = 'flex'; 
-        };
-
-        window.sh = (k, v) => { const e = document.getElementById(`p-${k}`); e.innerText = (e.innerText === '••••••••') ? v : '••••••••'; };
-        window.cp = (id) => { navigator.clipboard.writeText(document.getElementById(id).innerText); alert("Copied!"); };
-        window.cp_raw = (v) => { navigator.clipboard.writeText(v); alert("Copied!"); };
-
-        // ATTACH CLICK & TOUCH EVENTS
-        const addMobileAction = (id, callback) => {
-            const btn = document.getElementById(id);
-            ['touchend', 'click'].forEach(evt => {
-                btn.addEventListener(evt, (e) => {
-                    e.preventDefault();
-                    callback();
-                }, { passive: false });
-            });
-        };
-
-        // SAVE LOGIC
-        const performSave = async (path) => {
+        window.save = async (path) => {
             if(!uid) return;
-            const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-            const date = new Date().toLocaleDateString('en-GB');
-            let data = { time, date };
+            const stamp = new Date().toLocaleString('en-GB', { day:'2-digit', month:'2-digit', year:'numeric', hour:'2-digit', minute:'2-digit' });
+            let payload = { stamp };
 
-            if(path === 'queries') {
-                const el = document.getElementById('in-q');
-                if(!el.value) return;
-                data.val = el.value; el.value = '';
-            } else if(path === 'notes') {
-                const el = document.getElementById('in-n');
-                if(!el.value) return;
-                data.val = el.value; el.value = '';
-            } else {
-                const s = document.getElementById('p-s'), u = document.getElementById('p-u'), p = document.getElementById('p-p');
-                if(!s.value) return;
-                data.site = s.value; data.user = u.value; data.pass = p.value;
-                s.value = u.value = p.value = '';
+            if(path === 'queries') { payload.val = document.getElementById('q-input').value; document.getElementById('q-input').value=''; }
+            else if(path === 'notes') { payload.val = document.getElementById('n-input').value; document.getElementById('n-input').value=''; }
+            else { 
+                payload.site = document.getElementById('p-site').value; payload.user = document.getElementById('p-user').value; payload.pass = document.getElementById('p-pass').value;
+                document.getElementById('p-site').value=document.getElementById('p-user').value=document.getElementById('p-pass').value='';
             }
-
-            const dbRef = ref(db, `users/${uid}/${path}`);
-            await push(dbRef, data);
+            if(payload.val || payload.site) await push(ref(db, `users/${uid}/${path}`), payload);
         };
 
-        addMobileAction('btn-q-save', () => performSave('queries'));
-        addMobileAction('btn-p-save', () => performSave('passwords'));
-        addMobileAction('btn-n-save', () => performSave('notes'));
+        window.askDel = (p, k) => { delObj = {p, k}; document.getElementById('modal').style.display = 'flex'; };
 
-        // INITIALIZE
+        document.getElementById('btn-confirm-del').onclick = async () => {
+            if(delObj) { await remove(ref(db, `users/${uid}/${delObj.p}/${delObj.k}`)); closeDel(); }
+        };
+
         onAuthStateChanged(auth, (user) => {
-            if (user) {
+            if(user) {
                 uid = user.uid;
-                localStorage.setItem('last_uid', uid);
                 document.getElementById('u-name').innerText = user.displayName.split(' ')[0];
                 document.getElementById('u-pic').src = user.photoURL;
-                document.getElementById('login-screen').classList.add('hidden');
-                sync();
+                document.getElementById('login-overlay').classList.add('hidden');
+                initSync();
             } else {
-                document.getElementById('login-screen').classList.remove('hidden');
+                document.getElementById('login-overlay').classList.remove('hidden');
             }
         });
 
-        document.getElementById('btn-google').onclick = () => signInWithPopup(auth, provider);
+        document.getElementById('google-login').onclick = () => signInWithPopup(auth, provider);
 
-        function sync() {
+        function initSync() {
             ['queries','passwords','notes'].forEach(p => {
                 onValue(ref(db, `users/${uid}/${p}`), (snap) => {
-                    const data = snap.val() || {};
-                    memory[p] = data;
-                    render(p, data);
+                    const val = snap.val() || {};
+                    masterData[p] = val;
+                    draw(p, val);
                 });
             });
         }
 
-        function render(path, data) {
-            const list = document.getElementById(`list-${path}`);
-            list.innerHTML = '';
+        function draw(path, data) {
+            const box = document.getElementById(`render-${path}`);
+            box.innerHTML = '';
             Object.keys(data).reverse().forEach(key => {
                 const item = data[key];
                 const div = document.createElement('div');
-                div.className = 'bubble';
+                div.className = 'msg-bubble';
                 if(path === 'passwords') {
-                    div.innerHTML = `<span class="pass-site">${item.site}</span>
-                        <div class="cred-box"><span id="u-${key}">${item.user}</span><button class="copy-btn" onclick="cp('u-${key}')"><i class="fas fa-copy"></i></button></div>
-                        <div class="cred-box"><span id="p-${key}">••••••••</span><div style="display:flex; gap:10px;">
-                        <button class="copy-btn" onclick="sh('${key}','${item.pass}')"><i class="fas fa-eye"></i></button>
-                        <button class="copy-btn" onclick="cp_raw('${item.pass}')"><i class="fas fa-key"></i></button></div></div>
-                        <div class="b-footer"><span>${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
+                    div.innerHTML = `<span class="b-title">${item.site}</span>
+                        <div style="font-size:14px; margin: 5px 0;"><b>U:</b> ${item.user} | <b>P:</b> ${item.pass}</div>
+                        <div class="b-footer"><span>${item.stamp}</span><span class="btn-del" onclick="askDel('passwords','${key}')">DELETE</span></div>`;
                 } else {
-                    div.innerHTML = `<div>${item.val}</div><div class="b-footer"><span>${item.date}</span>
-                        <div class="btn-delete" onclick="askDelete('${path}','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
+                    div.innerHTML = `<div style="font-size:15px; line-height:1.5;">${item.val}</div>
+                        <div class="b-footer"><span>${item.stamp}</span><span class="btn-del" onclick="askDel('${path}','${key}')">DELETE</span></div>`;
                 }
-                list.appendChild(div);
+                box.appendChild(div);
             });
         }
 
-        document.getElementById('modal-confirm-btn').onclick = () => {
-            if(deleteInfo) {
-                remove(ref(db, `users/${uid}/${deleteInfo.path}/${deleteInfo.key}`));
-                closeModal();
-            }
-        };
-
-        window.exportExcel = () => {
-            const rows = Object.keys(memory[currentTab]).map(k => ({ ...memory[currentTab][k] }));
-            const ws = XLSX.utils.json_to_sheet(rows);
+        window.exportToExcel = () => {
+            const list = Object.keys(masterData[activeTab]).map(k => masterData[activeTab][k]);
+            const ws = XLSX.utils.json_to_sheet(list);
             const wb = XLSX.utils.book_new();
-            XLSX.utils.book_append_sheet(wb, ws, "GMS_Backup");
-            XLSX.writeFile(wb, `GMS_Tracker.xlsx`);
+            XLSX.utils.book_append_sheet(wb, ws, "GMS_Data");
+            XLSX.writeFile(wb, `GMS_${activeTab}.xlsx`);
         };
     </script>
 </body>
