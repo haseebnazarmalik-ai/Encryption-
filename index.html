@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GMS Multi-Tracker | V4.7 Import Ready</title>
+    <title>GMS Multi-Tracker | V4.5</title>
     
     <meta name="theme-color" content="#075E54">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -47,13 +47,16 @@
         .tab-indicator { position: absolute; bottom: 0; left: 0; height: 4px; background: white; width: 33.33%; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); z-index: 1; }
 
         .search-area { background: white; padding: 12px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
-        .search-wrapper { flex: 1; display: flex; align-items: center; background: #f0f2f5; padding: 2px 15px; border-radius: 30px; }
+        .search-wrapper { flex: 1; display: flex; align-items: center; background: #f0f2f5; padding: 2px 15px; border-radius: 30px; position: relative; }
         .search-box { flex: 1; background: transparent; border: none; padding: 10px; font-size: 14px; }
+        
+        /* Clear Icon Style */
+        #clear-search { color: var(--text-muted); cursor: pointer; padding: 5px; display: none; }
 
         .content-section { display: none; width: 100%; max-width: 800px; margin: 0 auto; padding: 10px; }
         .content-section.active { display: block; }
 
-        .input-panel { background: white; padding: 15px; box-shadow: var(--shadow); margin: 10px 0; border-radius: 15px; }
+        .input-panel { background: white; padding: 15px; box-shadow: var(--shadow); margin: 10px 0; border-radius: 15px; transition: 0.3s; }
         .wa-input { width: 100%; border: 1px solid #e9edef; padding: 12px; border-radius: 8px; font-size: 15px; margin-bottom: 10px; }
         .send-btn { width: 100%; background: var(--wa-teal); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
         .send-btn:active { transform: scale(0.98); background: var(--wa-green); }
@@ -70,15 +73,8 @@
         #custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; display: none; align-items: flex-end; }
         .modal-box { background: white; width: 100%; padding: 25px; border-radius: 25px 25px 0 0; animation: slideUp 0.3s ease-out; text-align: center; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        .modal-btns { display: flex; gap: 15px; margin-top: 20px; }
-        .m-btn { flex: 1; padding: 15px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; }
-        .m-confirm { background: var(--danger); color: white; }
-        .m-cancel { background: #f0f2f5; color: var(--text-main); }
-
-        #login-screen { position: fixed; inset: 0; background: #f0f2f5; z-index: 9000; display: flex; justify-content: center; align-items: center; }
         
-        /* New Import Style */
-        .import-label { background: #eceff1; padding: 8px 12px; border-radius: 20px; font-size: 12px; color: #455a64; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; }
+        #login-screen { position: fixed; inset: 0; background: #f0f2f5; z-index: 9000; display: flex; justify-content: center; align-items: center; }
     </style>
 </head>
 <body>
@@ -112,15 +108,15 @@
             <div class="search-wrapper">
                 <i class="fas fa-search" style="color:var(--text-muted);"></i>
                 <input type="text" id="master-search" class="search-box" placeholder="Instant Search...">
+                <i class="fas fa-times-circle" id="clear-search" onclick="resetSearch()"></i>
             </div>
-            <button onclick="exportExcel()" style="border:none; background:#1d6f42; color:white; border-radius:50%; width:35px; height:35px;" title="Export Excel"><i class="fas fa-file-excel"></i></button>
-            
+            <button onclick="exportExcel()" style="border:none; background:#1d6f42; color:white; border-radius:50%; width:35px; height:35px;"><i class="fas fa-file-excel"></i></button>
             <input type="file" id="csv-file" class="hidden" accept=".csv, .xlsx">
-            <button onclick="document.getElementById('csv-file').click()" style="border:none; background:var(--wa-teal); color:white; border-radius:50%; width:35px; height:35px;" title="Import Chrome CSV"><i class="fas fa-file-import"></i></button>
+            <button onclick="document.getElementById('csv-file').click()" style="border:none; background:var(--wa-teal); color:white; border-radius:50%; width:35px; height:35px;"><i class="fas fa-file-import"></i></button>
         </div>
 
         <div id="sec-queries" class="content-section active">
-            <div class="input-panel">
+            <div class="input-panel" id="panel-queries">
                 <input type="text" id="in-q" class="wa-input" placeholder="Enter task or query...">
                 <button class="send-btn" onclick="saveData('queries')">SAVE TO CLOUD</button>
             </div>
@@ -128,18 +124,17 @@
         </div>
 
         <div id="sec-passwords" class="content-section">
-            <div class="input-panel">
+            <div class="input-panel" id="panel-passwords">
                 <input type="text" id="p-s" class="wa-input" placeholder="Site Name">
                 <input type="text" id="p-u" class="wa-input" placeholder="Username">
                 <input type="text" id="p-p" class="wa-input" placeholder="Password">
                 <button class="send-btn" onclick="saveData('passwords')">SAVE SECURELY</button>
-                <p style="font-size:10px; color:gray; margin-top:10px; text-align:center;">Tip: Use the Import icon above to bulk upload Chrome passwords.</p>
             </div>
             <div id="list-passwords"></div>
         </div>
 
         <div id="sec-notes" class="content-section">
-            <div class="input-panel">
+            <div class="input-panel" id="panel-notes">
                 <textarea id="in-n" class="wa-input" style="height:80px; resize:none;" placeholder="Technical notes..."></textarea>
                 <button class="send-btn" onclick="saveData('notes')">ADD NOTE</button>
             </div>
@@ -153,14 +148,14 @@
             <h3 style="margin:0;">Delete Record?</h3>
             <div class="modal-btns">
                 <button class="m-btn m-cancel" onclick="closeModal()">CANCEL</button>
-                <button id="modal-confirm-btn" class="m-btn m-confirm">DELETE</button>
+                <button id="modal-confirm-btn" style="background:var(--danger); color:white; border:none; padding:15px; border-radius:12px; flex:1; font-weight:700;">DELETE</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -181,56 +176,73 @@
         let uid, currentTab = 'queries', deleteInfo = null;
         let memory = { queries: {}, passwords: {}, notes: {} };
 
-        // --- IMPORT LOGIC ---
+        // --- SEARCH & UI LOGIC ---
+        const searchInput = document.getElementById('master-search');
+        const clearBtn = document.getElementById('clear-search');
+
+        searchInput.oninput = (e) => {
+            const term = e.target.value.toLowerCase();
+            const panel = document.getElementById(`panel-${currentTab}`);
+            
+            if(term.length > 0) {
+                panel.classList.add('hidden'); // Hide input box while searching
+                clearBtn.style.display = 'block'; // Show 'X' icon
+            } else {
+                panel.classList.remove('hidden'); // Show input box if search is empty
+                clearBtn.style.display = 'none';
+            }
+
+            const filtered = {};
+            Object.keys(memory[currentTab]).forEach(k => { 
+                if(JSON.stringify(memory[currentTab][k]).toLowerCase().includes(term)) filtered[k] = memory[currentTab][k]; 
+            });
+            render(currentTab, filtered);
+        };
+
+        window.resetSearch = () => {
+            searchInput.value = '';
+            document.getElementById(`panel-${currentTab}`).classList.remove('hidden');
+            clearBtn.style.display = 'none';
+            render(currentTab, memory[currentTab]);
+        };
+
+        // --- IMPORT CSV ---
         document.getElementById('csv-file').addEventListener('change', function(e) {
             if(!uid) return alert("Please Login First");
             const file = e.target.files[0];
             const reader = new FileReader();
-            
             reader.onload = function(evt) {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
-                const firstSheet = workbook.Sheets[workbook.SheetNames[0]];
-                const jsonData = XLSX.utils.sheet_to_json(firstSheet);
-                
+                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
                 let count = 0;
-                const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-                const date = new Date().toLocaleDateString('en-GB');
-
                 jsonData.forEach(row => {
-                    // Mapping columns from Chrome CSV: name -> site, username -> user, password -> pass
                     if(row.name && row.password) {
-                        const obj = {
-                            site: row.name || "Unknown Site",
-                            user: row.username || "N/A",
-                            pass: row.password || "",
-                            date: date,
-                            time: time
-                        };
-                        push(ref(db, `users/${uid}/passwords`), obj);
+                        push(ref(db, `users/${uid}/passwords`), {
+                            site: row.name, user: row.username || "N/A", pass: row.password,
+                            date: new Date().toLocaleDateString('en-GB'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                        });
                         count++;
                     }
                 });
-                alert(`Successfully imported ${count} passwords!`);
-                e.target.value = ''; // Reset input
+                alert(`Imported ${count} passwords!`);
+                e.target.value = '';
             };
             reader.readAsArrayBuffer(file);
         });
 
-        // --- CORE FUNCTIONS ---
+        // --- AUTH & DATA CORE ---
         window.saveData = (path) => {
-            if(!uid) return alert("Please Wait... Authenticating");
+            if(!uid) return;
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const date = new Date().toLocaleDateString('en-GB');
             let obj = { time, date };
 
             if(path === 'queries') {
-                const el = document.getElementById('in-q');
-                if(!el.value.trim()) return;
+                const el = document.getElementById('in-q'); if(!el.value.trim()) return;
                 obj.val = el.value; el.value = '';
             } else if(path === 'notes') {
-                const el = document.getElementById('in-n');
-                if(!el.value.trim()) return;
+                const el = document.getElementById('in-n'); if(!el.value.trim()) return;
                 obj.val = el.value; el.value = '';
             } else if(path === 'passwords') {
                 const s = document.getElementById('p-s'), u = document.getElementById('p-u'), p = document.getElementById('p-p');
@@ -238,12 +250,12 @@
                 obj.site = s.value; obj.user = u.value; obj.pass = p.value;
                 s.value = ''; u.value = ''; p.value = '';
             }
-
             push(ref(db, `users/${uid}/${path}`), obj);
         };
 
         window.nav = (section, idx) => {
             currentTab = section;
+            resetSearch(); // Reset search when switching tabs
             document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx));
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`sec-${section}`).classList.add('active');
@@ -256,37 +268,19 @@
             if(deleteInfo) { remove(ref(db, `users/${uid}/${deleteInfo.path}/${deleteInfo.key}`)); closeModal(); }
         };
 
-        function instantLoad() {
-            const lastUid = localStorage.getItem('last_uid');
-            const lastPic = localStorage.getItem('last_pic');
-            const lastName = localStorage.getItem('last_name');
-            if(lastPic) document.getElementById('u-pic').src = lastPic;
-            if(lastName) document.getElementById('u-name').innerText = lastName;
-
-            if(lastUid) {
-                uid = lastUid;
-                document.getElementById('login-screen').classList.add('hidden');
-                ['queries', 'passwords', 'notes'].forEach(p => {
-                    const local = localStorage.getItem(`gms_final_${uid}_${p}`);
-                    if(local) { memory[p] = JSON.parse(local); render(p, memory[p]); }
-                });
-            }
-        }
-        instantLoad();
-
         setPersistence(auth, browserLocalPersistence).then(() => {
             onAuthStateChanged(auth, (user) => {
                 if (user) {
                     uid = user.uid;
-                    const name = user.displayName.split(' ')[0];
-                    const pic = user.photoURL;
-                    localStorage.setItem('last_uid', uid);
-                    localStorage.setItem('last_name', name);
-                    localStorage.setItem('last_pic', pic);
-                    document.getElementById('u-name').innerText = name;
-                    document.getElementById('u-pic').src = pic;
+                    document.getElementById('u-name').innerText = user.displayName.split(' ')[0];
+                    document.getElementById('u-pic').src = user.photoURL;
                     document.getElementById('login-screen').classList.add('hidden');
-                    startSync();
+                    ['queries', 'passwords', 'notes'].forEach(path => {
+                        onValue(ref(db, `users/${uid}/${path}`), (snap) => {
+                            memory[path] = snap.val() || {};
+                            render(path, memory[path]);
+                        });
+                    });
                 } else {
                     document.getElementById('login-screen').classList.remove('hidden');
                 }
@@ -295,34 +289,22 @@
 
         document.getElementById('btn-google').onclick = () => signInWithPopup(auth, provider);
 
-        function startSync() {
-            ['queries', 'passwords', 'notes'].forEach(path => {
-                onValue(ref(db, `users/${uid}/${path}`), (snap) => {
-                    const data = snap.val() || {};
-                    memory[path] = data;
-                    localStorage.setItem(`gms_final_${uid}_${path}`, JSON.stringify(data));
-                    render(path, data);
-                });
-            });
-        }
-
         function render(path, data) {
             const list = document.getElementById(`list-${path}`);
-            if(!list) return;
-            list.innerHTML = '';
+            if(!list) return; list.innerHTML = '';
             Object.keys(data).reverse().forEach(key => {
                 const item = data[key];
                 const div = document.createElement('div');
                 div.className = 'bubble';
                 if(path === 'passwords') {
                     div.innerHTML = `<span class="pass-site"><i class="fas fa-lock"></i> ${item.site}</span>
-                        <div class="cred-box"><span id="u-${key}">${item.user}</span><button class="copy-btn" onclick="cp('u-${key}')"><i class="fas fa-copy"></i></button></div>
+                        <div class="cred-box"><span>${item.user}</span><button class="copy-btn" onclick="cp_raw('${item.user}')"><i class="fas fa-copy"></i></button></div>
                         <div class="cred-box"><span id="p-${key}">••••••••</span><div style="display:flex; gap:10px;">
                         <button class="copy-btn" style="color:#aaa" onclick="sh('${key}','${item.pass}')"><i class="fas fa-eye"></i></button>
                         <button class="copy-btn" onclick="cp_raw('${item.pass}')"><i class="fas fa-key"></i></button></div></div>
-                        <div class="b-footer"><span class="b-meta">${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
+                        <div class="b-footer"><span>${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
                 } else {
-                    div.innerHTML = `<div style="font-size:16px;">${item.val}</div><div class="b-footer"><span class="b-meta">${item.date}</span>
+                    div.innerHTML = `<div style="font-size:16px;">${item.val}</div><div class="b-footer"><span>${item.date}</span>
                         <div class="btn-delete" onclick="askDelete('${path}','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
                 }
                 list.appendChild(div);
@@ -330,20 +312,12 @@
         }
 
         window.sh = (k, v) => { const e = document.getElementById(`p-${k}`); e.innerText = (e.innerText === '••••••••') ? v : '••••••••'; };
-        window.cp = (id) => { navigator.clipboard.writeText(document.getElementById(id).innerText); alert("Copied!"); };
-        window.cp_raw = (v) => { navigator.clipboard.writeText(v); alert("Key Copied!"); };
+        window.cp_raw = (v) => { navigator.clipboard.writeText(v); alert("Copied!"); };
         window.exportExcel = () => {
-            const rows = Object.keys(memory[currentTab]).map(k => ({ ...memory[currentTab][k] }));
-            const ws = XLSX.utils.json_to_sheet(rows);
+            const ws = XLSX.utils.json_to_sheet(Object.values(memory[currentTab]));
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Backup");
-            XLSX.writeFile(wb, `GMS_Export.xlsx`);
-        };
-        document.getElementById('master-search').oninput = (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = {};
-            Object.keys(memory[currentTab]).forEach(k => { if(JSON.stringify(memory[currentTab][k]).toLowerCase().includes(term)) filtered[k] = memory[currentTab][k]; });
-            render(currentTab, filtered);
+            XLSX.writeFile(wb, `GMS_V4.5_Export.xlsx`);
         };
     </script>
 </body>
