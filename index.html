@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GMS Multi-Tracker | Lightning V4.0</title>
+    <title>GMS Multi-Tracker | Fixed V4.1</title>
     
     <meta name="theme-color" content="#075E54">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -32,9 +32,6 @@
             overflow-x: hidden;
         }
 
-        /* --- PREVENT JUMP/LOADER --- */
-        #master-loader { display: none; } /* Disabled for instant feel */
-
         .hidden { display: none !important; }
 
         header { background: var(--wa-green); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
@@ -44,7 +41,7 @@
         .tab-strip { display: flex; background: var(--wa-green); position: relative; }
         .tab-item { flex: 1; text-align: center; padding: 16px 0; font-size: 13px; font-weight: 700; color: rgba(255,255,255,0.6); text-transform: uppercase; cursor: pointer; }
         .tab-item.active { color: white; }
-        .tab-indicator { position: absolute; bottom: 0; left: 0; height: 4px; background: white; width: 33.33%; transition: 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        .tab-indicator { position: absolute; bottom: 0; left: 0; height: 4px; background: white; width: 33.33%; transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
 
         .search-area { background: white; padding: 12px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .search-wrapper { flex: 1; display: flex; align-items: center; background: #f0f2f5; padding: 2px 15px; border-radius: 30px; }
@@ -64,12 +61,12 @@
         .copy-btn { background: none; border: none; color: var(--wa-teal); cursor: pointer; font-size: 18px; padding: 5px; }
 
         .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; }
-        .btn-delete { background: #fff5f5; color: var(--danger); border: 1px solid #ffe3e3; padding: 6px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .btn-delete { background: #fff5f5; color: var(--danger); border: 1px solid #ffe3e3; padding: 8px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px; cursor: pointer; }
 
-        /* --- CUSTOM MODAL DIALOG --- */
+        /* --- DIALOG MODAL --- */
         #custom-modal {
             position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.5); z-index: 10000;
+            background: rgba(0,0,0,0.6); z-index: 10000;
             display: none; align-items: flex-end;
         }
         .modal-box {
@@ -89,7 +86,7 @@
 <body>
 
     <div id="login-screen" class="hidden">
-        <div style="background:white; padding:40px; border-radius:24px; text-align:center; width:85%; max-width:400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div style="background:white; padding:40px; border-radius:24px; text-align:center; width:85%; max-width:400px;">
             <i class="fab fa-whatsapp" style="font-size:60px; color:var(--wa-teal);"></i>
             <h2 style="margin: 20px 0;">GMS Tracker</h2>
             <button id="btn-google" class="send-btn" style="background:#4285F4;">SIGN IN WITH GOOGLE</button>
@@ -145,11 +142,11 @@
         </div>
     </div>
 
-    <div id="custom-modal" onclick="closeModal()">
-        <div class="modal-box" onclick="event.stopPropagation()">
-            <div style="font-size: 40px; color: var(--danger); margin-bottom: 10px;"><i class="fas fa-exclamation-circle"></i></div>
-            <h3 style="margin:0;">Are you sure?</h3>
-            <p style="color:var(--text-muted); font-size: 14px;">This record will be deleted permanently.</p>
+    <div id="custom-modal">
+        <div class="modal-box">
+            <div style="font-size: 40px; color: var(--danger); margin-bottom: 10px;"><i class="fas fa-trash-can"></i></div>
+            <h3 style="margin:0;">Delete Permanently?</h3>
+            <p style="color:var(--text-muted); font-size: 14px;">This action cannot be undone.</p>
             <div class="modal-btns">
                 <button class="m-btn m-cancel" onclick="closeModal()">CANCEL</button>
                 <button id="modal-confirm-btn" class="m-btn m-confirm">DELETE</button>
@@ -179,9 +176,9 @@
 
         let uid, currentTab = 'queries';
         let memory = { queries: {}, passwords: {}, notes: {} };
-        let deleteRef = null;
+        let deleteInfo = null;
 
-        // --- MILLISECOND LOAD SYSTEM ---
+        // INSTANT LOAD
         function instantLoad() {
             const lastUid = localStorage.getItem('last_uid');
             if(lastUid) {
@@ -244,28 +241,36 @@
             });
         }
 
-        // --- CUSTOM DELETE SYSTEM ---
-        window.askDelete = (p, k) => {
-            deleteRef = { p, k };
-            document.getElementById('custom-modal').style.display = 'flex';
-        };
-        window.closeModal = () => { document.getElementById('custom-modal').style.display = 'none'; };
-        document.getElementById('modal-confirm-btn').onclick = () => {
-            if(deleteRef) {
-                remove(ref(db, `users/${uid}/${deleteRef.p}/${deleteRef.k}`));
-                closeModal();
-            }
-        };
-
+        // TAB NAVIGATION FIXED
         window.nav = (section, idx) => {
             currentTab = section;
-            document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx));
+            const items = document.querySelectorAll('.tab-item');
+            items.forEach((t, i) => t.classList.toggle('active', i === idx));
+            
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`sec-${section}`).classList.add('active');
+            
             document.getElementById('tab-mark').style.transform = `translateX(${idx * 100}%)`;
             window.scrollTo(0,0);
         };
 
+        // DELETE SYSTEM FIXED
+        window.askDelete = (p, k) => {
+            deleteInfo = { path: p, key: k };
+            document.getElementById('custom-modal').style.display = 'flex';
+        };
+        window.closeModal = () => {
+            document.getElementById('custom-modal').style.display = 'none';
+        };
+        document.getElementById('modal-confirm-btn').onclick = () => {
+            if(deleteInfo) {
+                remove(ref(db, `users/${uid}/${deleteInfo.path}/${deleteInfo.key}`));
+                closeModal();
+                deleteInfo = null;
+            }
+        };
+
+        // SEARCH
         document.getElementById('master-search').oninput = (e) => {
             const term = e.target.value.toLowerCase();
             const filtered = {};
