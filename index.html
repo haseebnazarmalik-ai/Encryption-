@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>GMS Tracker | Mobile Optimized V5.0</title>
+    <title>GMS Tracker | Ultra Fast V6.0</title>
     
     <meta name="theme-color" content="#075E54">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
@@ -22,7 +22,7 @@
             --shadow: 0 2px 5px rgba(0,0,0,0.1);
         }
 
-        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
+        * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; touch-action: manipulation; }
 
         body {
             font-family: 'Roboto', sans-serif;
@@ -30,7 +30,6 @@
             background-color: var(--wa-bg);
             min-height: 100vh;
             overflow-x: hidden;
-            -webkit-user-select: none; /* UI smooth rakhne ke liye */
         }
 
         .hidden { display: none !important; }
@@ -39,7 +38,7 @@
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; height: 60px; }
         
         .user-profile { display: flex; align-items: center; gap: 10px; }
-        #u-name { font-size: 14px; font-weight: 500; color: #fff; max-width: 80px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+        #u-name { font-size: 14px; font-weight: 500; }
         #u-pic { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid white; background: #eee; object-fit: cover; }
 
         .tab-strip { display: flex; background: var(--wa-green); position: relative; }
@@ -49,35 +48,34 @@
 
         .search-area { background: white; padding: 12px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .search-wrapper { flex: 1; display: flex; align-items: center; background: #f0f2f5; padding: 2px 15px; border-radius: 30px; }
-        .search-box { flex: 1; background: transparent; border: none; padding: 10px; font-size: 14px; color: var(--text-main); }
+        .search-box { flex: 1; background: transparent; border: none; padding: 10px; font-size: 14px; }
 
         .content-section { display: none; width: 100%; max-width: 800px; margin: 0 auto; padding: 10px; padding-bottom: 80px; }
         .content-section.active { display: block; }
 
         .input-panel { background: white; padding: 15px; box-shadow: var(--shadow); margin: 10px 0; border-radius: 15px; }
-        .wa-input { width: 100%; border: 1px solid #e9edef; padding: 12px; border-radius: 8px; font-size: 16px; margin-bottom: 10px; background: #fff; color: #000; -webkit-appearance: none; }
+        .wa-input { width: 100%; border: 1px solid #e9edef; padding: 12px; border-radius: 8px; font-size: 16px; margin-bottom: 10px; }
         
         .send-btn { 
             width: 100%; background: var(--wa-teal); color: white; border: none; 
-            padding: 15px; border-radius: 10px; font-weight: 700; font-size: 14px;
-            cursor: pointer; transition: background 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            padding: 15px; border-radius: 10px; font-weight: 700; cursor: pointer;
         }
-        .send-btn:active { background: var(--wa-green); transform: translateY(1px); }
+        .send-btn:active { background: var(--wa-green); opacity: 0.8; }
 
         .bubble { width: 98%; margin: 10px auto; padding: 15px; border-radius: 12px; box-shadow: var(--shadow); background: var(--white); position: relative; }
         .pass-site { font-weight: 700; color: var(--wa-green); display: block; font-size: 17px; margin-bottom: 8px; border-bottom: 1px solid #f5f5f5; padding-bottom: 5px;}
         
-        .cred-box { background: #f8f9fa; border-radius: 8px; padding: 10px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; border: 1px solid #eee; }
+        .cred-box { background: #f8f9fa; border-radius: 8px; padding: 10px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; }
         .copy-btn { background: none; border: none; color: var(--wa-teal); cursor: pointer; font-size: 20px; padding: 8px; }
 
         .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #f1f1f1; }
         .btn-delete { background: #fff5f5; color: var(--danger); border: 1px solid #ffe3e3; padding: 10px 15px; border-radius: 20px; font-size: 12px; font-weight: 700; display: flex; align-items: center; gap: 6px; cursor: pointer; }
 
         #custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 10000; display: none; align-items: flex-end; }
-        .modal-box { background: white; width: 100%; padding: 25px; border-radius: 25px 25px 0 0; animation: slideUp 0.3s ease-out; text-align: center; padding-bottom: 40px; }
+        .modal-box { background: white; width: 100%; padding: 25px; border-radius: 25px 25px 0 0; animation: slideUp 0.2s ease-out; text-align: center; }
         @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
         .modal-btns { display: flex; gap: 15px; margin-top: 25px; }
-        .m-btn { flex: 1; padding: 16px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; font-size: 15px; }
+        .m-btn { flex: 1; padding: 16px; border-radius: 12px; font-weight: 700; border: none; cursor: pointer; }
         .m-confirm { background: var(--danger); color: white; }
         .m-cancel { background: #f0f2f5; color: var(--text-main); }
 
@@ -87,7 +85,7 @@
 <body>
 
     <div id="login-screen" class="hidden">
-        <div style="background:white; padding:40px; border-radius:24px; text-align:center; width:85%; max-width:400px; box-shadow: 0 10px 30px rgba(0,0,0,0.1);">
+        <div style="background:white; padding:40px; border-radius:24px; text-align:center; width:85%; max-width:400px;">
             <i class="fab fa-whatsapp" style="font-size:60px; color:var(--wa-teal);"></i>
             <h2 style="margin: 20px 0;">GMS Tracker</h2>
             <button id="btn-google" class="send-btn" style="background:#4285F4;">SIGN IN WITH GOOGLE</button>
@@ -129,8 +127,8 @@
 
         <div id="sec-passwords" class="content-section">
             <div class="input-panel">
-                <input type="text" id="p-s" class="wa-input" placeholder="Website/App Name">
-                <input type="text" id="p-u" class="wa-input" placeholder="Username/Email">
+                <input type="text" id="p-s" class="wa-input" placeholder="Site Name">
+                <input type="text" id="p-u" class="wa-input" placeholder="Username">
                 <input type="text" id="p-p" class="wa-input" placeholder="Password">
                 <button class="send-btn" id="btn-p-save">SAVE PASSWORD</button>
             </div>
@@ -139,28 +137,27 @@
 
         <div id="sec-notes" class="content-section">
             <div class="input-panel">
-                <textarea id="in-n" class="wa-input" style="height:100px; resize:none;" placeholder="Write detailed notes..."></textarea>
+                <textarea id="in-n" class="wa-input" style="height:100px; resize:none;" placeholder="Write notes..."></textarea>
                 <button class="send-btn" id="btn-n-save">SAVE NOTE</button>
             </div>
             <div id="list-notes"></div>
         </div>
     </div>
 
-    <div id="custom-modal">
-        <div class="modal-box">
+    <div id="custom-modal" onclick="closeModal()">
+        <div class="modal-box" onclick="event.stopPropagation()">
             <div style="font-size: 40px; color: var(--danger); margin-bottom: 10px;"><i class="fas fa-trash-can"></i></div>
             <h3 style="margin:0;">Confirm Delete?</h3>
-            <p style="color:var(--text-muted); font-size: 14px;">This record will be removed from Cloud.</p>
             <div class="modal-btns">
-                <button class="m-btn m-cancel" onclick="closeModal()">NO, KEEP IT</button>
-                <button id="modal-confirm-btn" class="m-btn m-confirm">YES, DELETE</button>
+                <button class="m-btn m-cancel" onclick="closeModal()">CANCEL</button>
+                <button id="modal-confirm-btn" class="m-btn m-confirm">DELETE</button>
             </div>
         </div>
     </div>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getDatabase, ref, push, onValue, remove, set } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
+        import { getDatabase, ref, push, onValue, remove, set, goOnline } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, setPersistence, browserLocalPersistence } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
         const firebaseConfig = {
@@ -177,18 +174,19 @@
         const db = getDatabase(app);
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
+        
+        goOnline(db); // Mobile connection force online
 
         let uid, currentTab = 'queries', deleteInfo = null;
         let memory = { queries: {}, passwords: {}, notes: {} };
 
-        // 1. ATTACH GLOBAL FUNCTIONS (To fix Mobile scope issues)
+        // GLOBAL WINDOW FUNCTIONS
         window.nav = (section, idx) => {
             currentTab = section;
             document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx));
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`sec-${section}`).classList.add('active');
             document.getElementById('tab-mark').style.transform = `translateX(${idx * 100}%)`;
-            window.scrollTo(0,0);
         };
 
         window.closeModal = () => document.getElementById('custom-modal').style.display = 'none';
@@ -199,136 +197,103 @@
         };
 
         window.sh = (k, v) => { const e = document.getElementById(`p-${k}`); e.innerText = (e.innerText === '••••••••') ? v : '••••••••'; };
-        window.cp = (id) => { navigator.clipboard.writeText(document.getElementById(id).innerText); alert("Text Copied!"); };
-        window.cp_raw = (v) => { navigator.clipboard.writeText(v); alert("Password Copied!"); };
+        window.cp = (id) => { navigator.clipboard.writeText(document.getElementById(id).innerText); alert("Copied!"); };
+        window.cp_raw = (v) => { navigator.clipboard.writeText(v); alert("Copied!"); };
 
-        // 2. MOBILE OPTIMIZED SAVE
-        async function performSave(path) {
-            if(!uid) return alert("Please sign in first");
-            
+        // ATTACH CLICK & TOUCH EVENTS
+        const addMobileAction = (id, callback) => {
+            const btn = document.getElementById(id);
+            ['touchend', 'click'].forEach(evt => {
+                btn.addEventListener(evt, (e) => {
+                    e.preventDefault();
+                    callback();
+                }, { passive: false });
+            });
+        };
+
+        // SAVE LOGIC
+        const performSave = async (path) => {
+            if(!uid) return;
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const date = new Date().toLocaleDateString('en-GB');
-            let dataObj = { time, date };
+            let data = { time, date };
 
-            try {
-                if(path === 'queries') {
-                    const input = document.getElementById('in-q');
-                    if(!input.value.trim()) return;
-                    dataObj.val = input.value;
-                    input.value = '';
-                } else if(path === 'notes') {
-                    const input = document.getElementById('in-n');
-                    if(!input.value.trim()) return;
-                    dataObj.val = input.value;
-                    input.value = '';
-                } else if(path === 'passwords') {
-                    const s = document.getElementById('p-s'), u = document.getElementById('p-u'), p = document.getElementById('p-p');
-                    if(!s.value.trim()) return;
-                    dataObj.site = s.value; dataObj.user = u.value; dataObj.pass = p.value;
-                    s.value = ''; u.value = ''; p.value = '';
-                }
-
-                const newRef = push(ref(db, `users/${uid}/${path}`));
-                await set(newRef, dataObj);
-                console.log("Mobile Sync Done");
-            } catch (err) {
-                alert("Mobile Error: " + err.message);
+            if(path === 'queries') {
+                const el = document.getElementById('in-q');
+                if(!el.value) return;
+                data.val = el.value; el.value = '';
+            } else if(path === 'notes') {
+                const el = document.getElementById('in-n');
+                if(!el.value) return;
+                data.val = el.value; el.value = '';
+            } else {
+                const s = document.getElementById('p-s'), u = document.getElementById('p-u'), p = document.getElementById('p-p');
+                if(!s.value) return;
+                data.site = s.value; data.user = u.value; data.pass = p.value;
+                s.value = u.value = p.value = '';
             }
-        }
 
-        // Event Listeners for Mobile
-        document.getElementById('btn-q-save').addEventListener('click', () => performSave('queries'));
-        document.getElementById('btn-p-save').addEventListener('click', () => performSave('passwords'));
-        document.getElementById('btn-n-save').addEventListener('click', () => performSave('notes'));
+            const dbRef = ref(db, `users/${uid}/${path}`);
+            await push(dbRef, data);
+        };
 
-        // 3. AUTH & PROFILE PERSISTENCE
-        function loadLocalProfile() {
-            const lastUid = localStorage.getItem('last_uid');
-            const lastPic = localStorage.getItem('last_pic');
-            const lastName = localStorage.getItem('last_name');
-            if(lastPic) document.getElementById('u-pic').src = lastPic;
-            if(lastName) document.getElementById('u-name').innerText = lastName;
-            if(lastUid) {
-                uid = lastUid;
+        addMobileAction('btn-q-save', () => performSave('queries'));
+        addMobileAction('btn-p-save', () => performSave('passwords'));
+        addMobileAction('btn-n-save', () => performSave('notes'));
+
+        // INITIALIZE
+        onAuthStateChanged(auth, (user) => {
+            if (user) {
+                uid = user.uid;
+                localStorage.setItem('last_uid', uid);
+                document.getElementById('u-name').innerText = user.displayName.split(' ')[0];
+                document.getElementById('u-pic').src = user.photoURL;
                 document.getElementById('login-screen').classList.add('hidden');
-                ['queries','passwords','notes'].forEach(p => {
-                    const local = localStorage.getItem(`gms_m5_${uid}_${p}`);
-                    if(local) { memory[p] = JSON.parse(local); render(p, memory[p]); }
-                });
+                sync();
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
             }
-        }
-        loadLocalProfile();
-
-        setPersistence(auth, browserLocalPersistence).then(() => {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    uid = user.uid;
-                    const name = user.displayName.split(' ')[0];
-                    localStorage.setItem('last_uid', uid);
-                    localStorage.setItem('last_name', name);
-                    localStorage.setItem('last_pic', user.photoURL);
-                    document.getElementById('u-name').innerText = name;
-                    document.getElementById('u-pic').src = user.photoURL;
-                    document.getElementById('login-screen').classList.add('hidden');
-                    startSync();
-                } else {
-                    document.getElementById('login-screen').classList.remove('hidden');
-                }
-            });
         });
 
         document.getElementById('btn-google').onclick = () => signInWithPopup(auth, provider);
 
-        function startSync() {
-            ['queries', 'passwords', 'notes'].forEach(path => {
-                onValue(ref(db, `users/${uid}/${path}`), (snap) => {
+        function sync() {
+            ['queries','passwords','notes'].forEach(p => {
+                onValue(ref(db, `users/${uid}/${p}`), (snap) => {
                     const data = snap.val() || {};
-                    memory[path] = data;
-                    localStorage.setItem(`gms_m5_${uid}_${path}`, JSON.stringify(data));
-                    render(path, data);
+                    memory[p] = data;
+                    render(p, data);
                 });
             });
         }
 
         function render(path, data) {
             const list = document.getElementById(`list-${path}`);
-            if(!list) return;
             list.innerHTML = '';
             Object.keys(data).reverse().forEach(key => {
                 const item = data[key];
                 const div = document.createElement('div');
                 div.className = 'bubble';
                 if(path === 'passwords') {
-                    div.innerHTML = `<span class="pass-site"><i class="fas fa-lock"></i> ${item.site}</span>
+                    div.innerHTML = `<span class="pass-site">${item.site}</span>
                         <div class="cred-box"><span id="u-${key}">${item.user}</span><button class="copy-btn" onclick="cp('u-${key}')"><i class="fas fa-copy"></i></button></div>
                         <div class="cred-box"><span id="p-${key}">••••••••</span><div style="display:flex; gap:10px;">
-                        <button class="copy-btn" style="color:#aaa" onclick="sh('${key}','${item.pass}')"><i class="fas fa-eye"></i></button>
+                        <button class="copy-btn" onclick="sh('${key}','${item.pass}')"><i class="fas fa-eye"></i></button>
                         <button class="copy-btn" onclick="cp_raw('${item.pass}')"><i class="fas fa-key"></i></button></div></div>
-                        <div class="b-footer"><span class="b-meta">${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
+                        <div class="b-footer"><span>${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
                 } else {
-                    div.innerHTML = `<div style="font-size:16px; line-height:1.5;">${item.val}</div><div class="b-footer"><span class="b-meta">${item.date}</span>
+                    div.innerHTML = `<div>${item.val}</div><div class="b-footer"><span>${item.date}</span>
                         <div class="btn-delete" onclick="askDelete('${path}','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
                 }
                 list.appendChild(div);
             });
         }
 
-        // DELETE MODAL ACTION
-        document.getElementById('modal-confirm-btn').onclick = async () => {
+        document.getElementById('modal-confirm-btn').onclick = () => {
             if(deleteInfo) {
-                try {
-                    await remove(ref(db, `users/${uid}/${deleteInfo.path}/${deleteInfo.key}`));
-                    closeModal();
-                } catch(e) { alert(e.message); }
+                remove(ref(db, `users/${uid}/${deleteInfo.path}/${deleteInfo.key}`));
+                closeModal();
             }
-        };
-
-        // SEARCH
-        document.getElementById('master-search').oninput = (e) => {
-            const term = e.target.value.toLowerCase();
-            const filtered = {};
-            Object.keys(memory[currentTab]).forEach(k => { if(JSON.stringify(memory[currentTab][k]).toLowerCase().includes(term)) filtered[k] = memory[currentTab][k]; });
-            render(currentTab, filtered);
         };
 
         window.exportExcel = () => {
@@ -336,7 +301,7 @@
             const ws = XLSX.utils.json_to_sheet(rows);
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "GMS_Backup");
-            XLSX.writeFile(wb, `GMS_${new Date().getTime()}.xlsx`);
+            XLSX.writeFile(wb, `GMS_Tracker.xlsx`);
         };
     </script>
 </body>
