@@ -18,19 +18,12 @@
             --white: #ffffff;
             --text-main: #111b21;
             --text-muted: #667781;
-            --danger: #ff4757;
-            --shadow: 0 2px 5px rgba(0,0,0,0.1);
+            --danger: #ea0038;
+            --shadow: 0 4px 12px rgba(0,0,0,0.15);
         }
 
         * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; outline: none; }
-
-        body {
-            font-family: 'Roboto', sans-serif;
-            margin: 0; padding: 0;
-            background-color: var(--wa-bg);
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: var(--wa-bg); min-height: 100vh; }
 
         .hidden { display: none !important; }
 
@@ -38,7 +31,7 @@
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; }
         
         .user-profile { display: flex; align-items: center; gap: 10px; }
-        #u-name { font-size: 14px; font-weight: 500; color: #fff; }
+        #u-name { font-size: 14px; font-weight: 500; }
         #u-pic { width: 38px; height: 38px; border-radius: 50%; border: 1.5px solid white; background: #eee; object-fit: cover; }
 
         .tab-strip { display: flex; background: var(--wa-green); position: relative; }
@@ -49,31 +42,33 @@
         .search-area { background: white; padding: 12px 15px; display: flex; gap: 10px; align-items: center; border-bottom: 1px solid rgba(0,0,0,0.05); }
         .search-wrapper { flex: 1; display: flex; align-items: center; background: #f0f2f5; padding: 2px 15px; border-radius: 30px; position: relative; }
         .search-box { flex: 1; background: transparent; border: none; padding: 10px; font-size: 14px; }
-        
-        /* Clear Icon Style */
-        #clear-search { color: var(--text-muted); cursor: pointer; padding: 5px; display: none; }
+        #clear-search { color: var(--text-muted); cursor: pointer; display: none; margin-left: 5px; }
 
         .content-section { display: none; width: 100%; max-width: 800px; margin: 0 auto; padding: 10px; }
         .content-section.active { display: block; }
 
-        .input-panel { background: white; padding: 15px; box-shadow: var(--shadow); margin: 10px 0; border-radius: 15px; transition: 0.3s; }
+        .input-panel { background: white; padding: 15px; box-shadow: var(--shadow); margin: 10px 0; border-radius: 15px; }
         .wa-input { width: 100%; border: 1px solid #e9edef; padding: 12px; border-radius: 8px; font-size: 15px; margin-bottom: 10px; }
         .send-btn { width: 100%; background: var(--wa-teal); color: white; border: none; padding: 14px; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.2s; }
-        .send-btn:active { transform: scale(0.98); background: var(--wa-green); }
+        .count-tag { font-size: 11px; color: var(--text-muted); text-align: right; display: block; margin-top: 5px; font-weight: 500; }
 
-        .bubble { width: 96%; margin: 8px auto; padding: 15px; border-radius: 12px; box-shadow: var(--shadow); background: var(--white); position: relative; }
-        .pass-site { font-weight: 700; color: var(--wa-green); display: block; font-size: 18px; margin-bottom: 8px; border-bottom: 1px solid #f1f1f1; padding-bottom: 5px;}
-        
-        .cred-box { background: #f8f9fa; border-radius: 8px; padding: 10px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; }
-        .copy-btn { background: none; border: none; color: var(--wa-teal); cursor: pointer; font-size: 18px; padding: 5px; }
+        .bubble { width: 96%; margin: 8px auto; padding: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.1); background: var(--white); }
+        .pass-site { font-weight: 700; color: var(--wa-green); display: block; font-size: 17px; margin-bottom: 8px; border-bottom: 1px solid #f1f1f1; padding-bottom: 5px;}
+        .cred-box { background: #f8f9fa; border-radius: 8px; padding: 10px; margin: 5px 0; display: flex; justify-content: space-between; align-items: center; font-size: 14px; }
+        .copy-btn { background: none; border: none; color: var(--wa-teal); cursor: pointer; font-size: 16px; padding: 5px; }
 
-        .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 15px; padding-top: 10px; border-top: 1px solid #eee; }
-        .btn-delete { background: #fff5f5; color: var(--danger); border: 1px solid #ffe3e3; padding: 8px 12px; border-radius: 20px; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 5px; cursor: pointer; }
+        .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f1f1; }
+        .btn-delete { color: var(--danger); font-size: 11px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 4px; }
 
-        #custom-modal { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.6); z-index: 10000; display: none; align-items: flex-end; }
-        .modal-box { background: white; width: 100%; padding: 25px; border-radius: 25px 25px 0 0; animation: slideUp 0.3s ease-out; text-align: center; }
-        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
-        
+        /* --- MODERN DELETE MODAL --- */
+        #custom-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(2px); }
+        .modal-box { background: white; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 10px 25px rgba(0,0,0,0.2); animation: popIn 0.2s ease-out; }
+        @keyframes popIn { from { transform: scale(0.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+        .modal-btns { display: flex; gap: 12px; margin-top: 20px; }
+        .m-btn { flex: 1; padding: 12px; border-radius: 10px; font-weight: 700; border: none; cursor: pointer; font-size: 14px; }
+        .m-confirm { background: var(--danger); color: white; }
+        .m-cancel { background: #f0f2f5; color: var(--text-main); }
+
         #login-screen { position: fixed; inset: 0; background: #f0f2f5; z-index: 9000; display: flex; justify-content: center; align-items: center; }
     </style>
 </head>
@@ -107,7 +102,7 @@
         <div class="search-area">
             <div class="search-wrapper">
                 <i class="fas fa-search" style="color:var(--text-muted);"></i>
-                <input type="text" id="master-search" class="search-box" placeholder="Instant Search...">
+                <input type="text" id="master-search" class="search-box" placeholder="Search saved items...">
                 <i class="fas fa-times-circle" id="clear-search" onclick="resetSearch()"></i>
             </div>
             <button onclick="exportExcel()" style="border:none; background:#1d6f42; color:white; border-radius:50%; width:35px; height:35px;"><i class="fas fa-file-excel"></i></button>
@@ -119,6 +114,7 @@
             <div class="input-panel" id="panel-queries">
                 <input type="text" id="in-q" class="wa-input" placeholder="Enter task or query...">
                 <button class="send-btn" onclick="saveData('queries')">SAVE TO CLOUD</button>
+                <span class="count-tag" id="count-queries">Total: 0</span>
             </div>
             <div id="list-queries"></div>
         </div>
@@ -129,6 +125,7 @@
                 <input type="text" id="p-u" class="wa-input" placeholder="Username">
                 <input type="text" id="p-p" class="wa-input" placeholder="Password">
                 <button class="send-btn" onclick="saveData('passwords')">SAVE SECURELY</button>
+                <span class="count-tag" id="count-passwords">Total: 0</span>
             </div>
             <div id="list-passwords"></div>
         </div>
@@ -137,6 +134,7 @@
             <div class="input-panel" id="panel-notes">
                 <textarea id="in-n" class="wa-input" style="height:80px; resize:none;" placeholder="Technical notes..."></textarea>
                 <button class="send-btn" onclick="saveData('notes')">ADD NOTE</button>
+                <span class="count-tag" id="count-notes">Total: 0</span>
             </div>
             <div id="list-notes"></div>
         </div>
@@ -144,11 +142,12 @@
 
     <div id="custom-modal">
         <div class="modal-box">
-            <div style="font-size: 40px; color: var(--danger); margin-bottom: 10px;"><i class="fas fa-trash-can"></i></div>
-            <h3 style="margin:0;">Delete Record?</h3>
+            <div style="font-size: 45px; color: var(--danger); margin-bottom: 15px;"><i class="fas fa-exclamation-circle"></i></div>
+            <h3 style="margin:0; color: #333;">Delete Record?</h3>
+            <p style="color: #666; font-size: 14px; margin: 10px 0;">This action cannot be undone.</p>
             <div class="modal-btns">
                 <button class="m-btn m-cancel" onclick="closeModal()">CANCEL</button>
-                <button id="modal-confirm-btn" style="background:var(--danger); color:white; border:none; padding:15px; border-radius:12px; flex:1; font-weight:700;">DELETE</button>
+                <button id="modal-confirm-btn" class="m-btn m-confirm">DELETE</button>
             </div>
         </div>
     </div>
@@ -176,22 +175,20 @@
         let uid, currentTab = 'queries', deleteInfo = null;
         let memory = { queries: {}, passwords: {}, notes: {} };
 
-        // --- SEARCH & UI LOGIC ---
-        const searchInput = document.getElementById('master-search');
-        const clearBtn = document.getElementById('clear-search');
+        // --- SEARCH LOGIC ---
+        const sInput = document.getElementById('master-search');
+        const cBtn = document.getElementById('clear-search');
 
-        searchInput.oninput = (e) => {
+        sInput.oninput = (e) => {
             const term = e.target.value.toLowerCase();
             const panel = document.getElementById(`panel-${currentTab}`);
-            
             if(term.length > 0) {
-                panel.classList.add('hidden'); // Hide input box while searching
-                clearBtn.style.display = 'block'; // Show 'X' icon
+                panel.classList.add('hidden');
+                cBtn.style.display = 'block';
             } else {
-                panel.classList.remove('hidden'); // Show input box if search is empty
-                clearBtn.style.display = 'none';
+                panel.classList.remove('hidden');
+                cBtn.style.display = 'none';
             }
-
             const filtered = {};
             Object.keys(memory[currentTab]).forEach(k => { 
                 if(JSON.stringify(memory[currentTab][k]).toLowerCase().includes(term)) filtered[k] = memory[currentTab][k]; 
@@ -200,38 +197,53 @@
         };
 
         window.resetSearch = () => {
-            searchInput.value = '';
+            sInput.value = '';
             document.getElementById(`panel-${currentTab}`).classList.remove('hidden');
-            clearBtn.style.display = 'none';
+            cBtn.style.display = 'none';
             render(currentTab, memory[currentTab]);
         };
 
-        // --- IMPORT CSV ---
+        // --- IMPORT CSV WITH 3-WAY DUPLICATE CHECK ---
         document.getElementById('csv-file').addEventListener('change', function(e) {
-            if(!uid) return alert("Please Login First");
+            if(!uid) return;
             const file = e.target.files[0];
             const reader = new FileReader();
             reader.onload = function(evt) {
                 const data = new Uint8Array(evt.target.result);
                 const workbook = XLSX.read(data, {type: 'array'});
                 const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                let count = 0;
+                let added = 0, skipped = 0;
+
                 jsonData.forEach(row => {
-                    if(row.name && row.password) {
-                        push(ref(db, `users/${uid}/passwords`), {
-                            site: row.name, user: row.username || "N/A", pass: row.password,
-                            date: new Date().toLocaleDateString('en-GB'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
-                        });
-                        count++;
+                    const site = String(row.name || "").trim();
+                    const user = String(row.username || "").trim();
+                    const pass = String(row.password || "").trim();
+
+                    if(site && pass) {
+                        // Check if Site, User AND Pass ALL match
+                        const isDuplicate = Object.values(memory.passwords).some(item => 
+                            item.site === site && item.user === user && item.pass === pass
+                        );
+
+                        if(!isDuplicate) {
+                            push(ref(db, `users/${uid}/passwords`), {
+                                site, user, pass,
+                                date: new Date().toLocaleDateString('en-GB'),
+                                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                            });
+                            added++;
+                        } else {
+                            skipped++;
+                        }
                     }
                 });
-                alert(`Imported ${count} passwords!`);
+                alert(`Import Complete!\nAdded: ${added}\nSkipped (Duplicates): ${skipped}`);
                 e.target.value = '';
             };
             reader.readAsArrayBuffer(file);
         });
 
-        // --- AUTH & DATA CORE ---
+        // --- CORE FUNCTIONS ---
         window.saveData = (path) => {
             if(!uid) return;
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
@@ -254,8 +266,7 @@
         };
 
         window.nav = (section, idx) => {
-            currentTab = section;
-            resetSearch(); // Reset search when switching tabs
+            currentTab = section; resetSearch();
             document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx));
             document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
             document.getElementById(`sec-${section}`).classList.add('active');
@@ -278,6 +289,7 @@
                     ['queries', 'passwords', 'notes'].forEach(path => {
                         onValue(ref(db, `users/${uid}/${path}`), (snap) => {
                             memory[path] = snap.val() || {};
+                            document.getElementById(`count-${path}`).innerText = `Total: ${Object.keys(memory[path]).length}`;
                             render(path, memory[path]);
                         });
                     });
@@ -302,9 +314,9 @@
                         <div class="cred-box"><span id="p-${key}">••••••••</span><div style="display:flex; gap:10px;">
                         <button class="copy-btn" style="color:#aaa" onclick="sh('${key}','${item.pass}')"><i class="fas fa-eye"></i></button>
                         <button class="copy-btn" onclick="cp_raw('${item.pass}')"><i class="fas fa-key"></i></button></div></div>
-                        <div class="b-footer"><span>${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
+                        <div class="b-footer"><span style="font-size:10px; color:#999">${item.date}</span><div class="btn-delete" onclick="askDelete('passwords','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
                 } else {
-                    div.innerHTML = `<div style="font-size:16px;">${item.val}</div><div class="b-footer"><span>${item.date}</span>
+                    div.innerHTML = `<div style="font-size:15px; line-height:1.4;">${item.val}</div><div class="b-footer"><span style="font-size:10px; color:#999">${item.date}</span>
                         <div class="btn-delete" onclick="askDelete('${path}','${key}')"><i class="fas fa-trash"></i> DELETE</div></div>`;
                 }
                 list.appendChild(div);
@@ -317,7 +329,7 @@
             const ws = XLSX.utils.json_to_sheet(Object.values(memory[currentTab]));
             const wb = XLSX.utils.book_new();
             XLSX.utils.book_append_sheet(wb, ws, "Backup");
-            XLSX.writeFile(wb, `GMS_V4.5_Export.xlsx`);
+            XLSX.writeFile(wb, `GMS_Backup.xlsx`);
         };
     </script>
 </body>
