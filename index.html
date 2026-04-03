@@ -26,6 +26,11 @@
         body { font-family: 'Roboto', sans-serif; margin: 0; padding: 0; background-color: var(--wa-bg); min-height: 100vh; }
         .hidden { display: none !important; }
 
+        /* LOADING SPINNER */
+        #loading-overlay { position: fixed; inset: 0; background: rgba(255,255,255,0.8); z-index: 20000; display: none; flex-direction: column; align-items: center; justify-content: center; backdrop-filter: blur(5px); }
+        .spinner { width: 50px; height: 50px; border: 5px solid #f3f3f3; border-top: 5px solid var(--wa-teal); border-radius: 50%; animation: spin 1s linear infinite; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+
         header { background: var(--wa-green); color: white; position: sticky; top: 0; z-index: 1000; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .top-bar { display: flex; justify-content: space-between; align-items: center; padding: 10px 16px; }
         .user-profile { display: flex; align-items: center; gap: 10px; }
@@ -57,7 +62,6 @@
         .b-footer { display: flex; justify-content: space-between; align-items: center; margin-top: 12px; padding-top: 8px; border-top: 1px solid #f1f1f1; }
         .btn-delete { color: var(--danger); font-size: 12px; font-weight: 700; cursor: pointer; display: flex; align-items: center; gap: 5px; padding: 5px; }
 
-        /* MODAL FIX */
         #custom-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 10000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
         .modal-box { background: white; width: 85%; max-width: 320px; padding: 25px; border-radius: 20px; text-align: center; box-shadow: 0 15px 35px rgba(0,0,0,0.3); }
         .modal-btns { display: flex; gap: 12px; margin-top: 20px; }
@@ -67,6 +71,11 @@
     </style>
 </head>
 <body>
+
+    <div id="loading-overlay">
+        <div class="spinner"></div>
+        <p style="margin-top: 15px; font-weight: 700; color: var(--wa-teal);">Importing Passwords...</p>
+    </div>
 
     <div id="login-screen" class="hidden">
         <div style="background:white; padding:40px; border-radius:24px; text-align:center; width:85%; max-width:400px;">
@@ -165,27 +174,6 @@
         let uid, currentTab = 'queries', deleteTarget = null;
         let memory = { queries: {}, passwords: {}, notes: {} };
 
-        // --- AUTH & SYNC ---
-        setPersistence(auth, browserLocalPersistence).then(() => {
-            onAuthStateChanged(auth, (user) => {
-                if (user) {
-                    uid = user.uid;
-                    document.getElementById('u-name').innerText = user.displayName.split(' ')[0];
-                    document.getElementById('u-pic').src = user.photoURL;
-                    document.getElementById('login-screen').classList.add('hidden');
-                    ['queries', 'passwords', 'notes'].forEach(path => {
-                        onValue(ref(db, `users/${uid}/${path}`), (snap) => {
-                            memory[path] = snap.val() || {};
-                            document.getElementById(`count-${path}`).innerText = `Total: ${Object.keys(memory[path]).length}`;
-                            render(path, memory[path]);
-                        });
-                    });
-                } else document.getElementById('login-screen').classList.remove('hidden');
-            });
-        });
-
-        document.getElementById('btn-google').onclick = () => signInWithPopup(auth, provider);
-
         // --- SEARCH ---
         const sInput = document.getElementById('master-search');
         const cBtn = document.getElementById('clear-search');
@@ -202,20 +190,63 @@
         };
         window.resetSearch = () => { sInput.value = ''; document.getElementById(`panel-${currentTab}`).classList.remove('hidden'); cBtn.style.display = 'none'; render(currentTab, memory[currentTab]); };
 
-        // --- DELETE (FIXED) ---
-        window.askDelete = (path, key) => {
-            deleteTarget = { path, key };
-            document.getElementById('custom-modal').style.display = 'flex';
-        };
+        // --- IMPORT WITH LOADING (FIXED) ---
+        document.getElementById('csv-file').addEventListener('change', async function(e) {
+            if(!uid || !e.target.files[0]) return;
+            
+            const loader = document.getElementById('loading-overlay');
+            loader.style.display = 'flex'; // Start Loading
+
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = async (evt) => {
+                const data = new Uint8Array(evt.target.result);
+                const workbook = XLSX.read(data, {type: 'array'});
+                const sheet = workbook.Sheets[workbook.SheetNames[0]];
+                const jsonData = XLSX.utils.sheet_to_json(sheet);
+                
+                let added = 0, skipped = 0;
+                
+                // Processing each row
+                for (const row of jsonData) {
+                    const site = String(row.name || row.Site || row.url || "").trim();
+                    const user = String(row.username || row.User || "").trim();
+                    const pass = String(row.password || row.Pass || "").trim();
+
+                    if(site && pass) {
+                        const isDuplicate = Object.values(memory.passwords).some(item => 
+                            item.site === site && item.user === user && item.pass === pass
+                        );
+
+                        if(!isDuplicate) {
+                            await push(ref(db, `users/${uid}/passwords`), {
+                                site, user, pass,
+                                date: new Date().toLocaleDateString('en-GB'),
+                                time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })
+                            });
+                            added++;
+                        } else {
+                            skipped++;
+                        }
+                    }
+                }
+                
+                loader.style.display = 'none'; // Stop Loading
+                alert(`Import Results:\n✅ Added: ${added}\n⚠️ Skipped: ${skipped}`);
+                e.target.value = '';
+            };
+            reader.readAsArrayBuffer(file);
+        });
+
+        // --- DELETE ---
+        window.askDelete = (path, key) => { deleteTarget = { path, key }; document.getElementById('custom-modal').style.display = 'flex'; };
         window.closeModal = () => { document.getElementById('custom-modal').style.display = 'none'; };
         document.getElementById('final-del-btn').onclick = () => {
-            if(deleteTarget && uid) {
-                remove(ref(db, `users/${uid}/${deleteTarget.path}/${deleteTarget.key}`));
-                closeModal();
-            }
+            if(deleteTarget && uid) { remove(ref(db, `users/${uid}/${deleteTarget.path}/${deleteTarget.key}`)); closeModal(); }
         };
 
-        // --- SAVE ---
+        // --- CORE ---
         window.saveData = (path) => {
             const time = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
             const date = new Date().toLocaleDateString('en-GB');
@@ -226,11 +257,9 @@
             push(ref(db, `users/${uid}/${path}`), obj);
         };
 
-        // --- RENDER ---
         function render(path, data) {
             const list = document.getElementById(`list-${path}`);
             list.innerHTML = '';
-            // Keys ko reverse karke render kar rahe hain
             Object.keys(data).reverse().forEach(key => {
                 const item = data[key];
                 const div = document.createElement('div'); div.className = 'bubble';
@@ -249,30 +278,29 @@
             });
         }
 
-        // --- HELPERS ---
         window.nav = (section, idx) => { currentTab = section; resetSearch(); document.querySelectorAll('.tab-item').forEach((t, i) => t.classList.toggle('active', i === idx)); document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active')); document.getElementById(`sec-${section}`).classList.add('active'); document.getElementById('tab-mark').style.transform = `translateX(${idx * 100}%)`; };
         window.sh = (k, v) => { const e = document.getElementById(`p-${k}`); e.innerText = (e.innerText === '••••••••') ? v : '••••••••'; };
         window.cp = (v) => { navigator.clipboard.writeText(v); alert("Copied!"); };
         window.exportExcel = () => { XLSX.writeFile(XLSX.utils.book_append_sheet(XLSX.utils.book_new(), XLSX.utils.json_to_sheet(Object.values(memory[currentTab])), "Backup"), "GMS_Backup.xlsx"); };
-        
-        // CSV Import logic remains the same...
-        document.getElementById('csv-file').addEventListener('change', function(e) {
-            const reader = new FileReader();
-            reader.onload = (evt) => {
-                const data = new Uint8Array(evt.target.result);
-                const workbook = XLSX.read(data, {type: 'array'});
-                const jsonData = XLSX.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]]);
-                jsonData.forEach(row => {
-                    const site = String(row.name || "").trim(), user = String(row.username || "").trim(), pass = String(row.password || "").trim();
-                    if(site && pass) {
-                        const isDuplicate = Object.values(memory.passwords).some(item => item.site === site && item.user === user && item.pass === pass);
-                        if(!isDuplicate) push(ref(db, `users/${uid}/passwords`), { site, user, pass, date: new Date().toLocaleDateString('en-GB'), time: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }) });
-                    }
-                });
-                e.target.value = '';
-            };
-            reader.readAsArrayBuffer(e.target.files[0]);
+
+        setPersistence(auth, browserLocalPersistence).then(() => {
+            onAuthStateChanged(auth, (user) => {
+                if (user) {
+                    uid = user.uid;
+                    document.getElementById('u-name').innerText = user.displayName.split(' ')[0];
+                    document.getElementById('u-pic').src = user.photoURL;
+                    document.getElementById('login-screen').classList.add('hidden');
+                    ['queries', 'passwords', 'notes'].forEach(path => {
+                        onValue(ref(db, `users/${uid}/${path}`), (snap) => {
+                            memory[path] = snap.val() || {};
+                            document.getElementById(`count-${path}`).innerText = `Total: ${Object.keys(memory[path]).length}`;
+                            render(path, memory[path]);
+                        });
+                    });
+                } else document.getElementById('login-screen').classList.remove('hidden');
+            });
         });
+        document.getElementById('btn-google').onclick = () => signInWithPopup(auth, provider);
     </script>
 </body>
 </html>
