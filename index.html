@@ -3,25 +3,34 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GMS Multi-Tracker</title>
+    <title>GMS Multi-Tracker Pro</title>
+    
+    <meta name="theme-color" content="#075E54">
+
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@300;400;500;700&display=swap" rel="stylesheet">
+    
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css" />
+
     <style>
         /* CSS Styles */
         :root {
             --wa-green: #075E54;
             --wa-teal: #128C7E;
             --wa-light-green: #25D366;
-            --wa-bg: #e5ddd5;
+            --wa-bg: #e5ddd5; /* WhatsApp Chat Background */
             --white: #ffffff;
+            --text-main: #303030;
+            --text-sec: #808080;
         }
 
         body {
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             background-color: var(--wa-bg);
+            height: 100vh;
             display: flex;
             flex-direction: column;
-            height: 100vh;
             overflow: hidden;
         }
 
@@ -29,158 +38,126 @@
 
         /* Login Screen */
         #login-screen {
-            height: 100vh;
-            background: white;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            text-align: center;
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: white; z-index: 9999;
+            display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center;
         }
-
-        .login-card {
-            padding: 40px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-            border-radius: 10px;
-        }
-
+        .login-card { padding: 40px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border-radius: 10px; }
         #google-login-btn {
-            background: #4285F4;
-            color: white;
-            border: none;
-            padding: 12px 25px;
-            font-size: 16px;
-            border-radius: 5px;
-            cursor: pointer;
-            margin-top: 20px;
-            transition: 0.3s;
+            background: #4285F4; color: white; border: none; padding: 12px 25px;
+            font-size: 16px; border-radius: 5px; cursor: pointer; margin-top: 20px;
         }
 
-        /* Header & WhatsApp UI */
+        /* Header UI */
         header {
             background: var(--wa-green);
             color: white;
-            padding-top: 10px;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+            position: sticky; top: 0; z-index: 100;
+            flex-shrink: 0;
         }
-
         .top-bar {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 10px 15px;
+            display: flex; justify-content: space-between; align-items: center;
+            padding: 10px 16px;
         }
+        .app-title { font-size: 20px; font-weight: 500; }
+        .user-profile { display: flex; align-items: center; gap: 12px; }
+        #user-display-name { font-weight: 400; font-size: 16px; }
+        #user-photo { width: 38px; height: 38px; border-radius: 50%; border: 1px solid white; }
 
-        .user-profile { display: flex; align-items: center; gap: 10px; }
-        .user-profile img { width: 35px; height: 35px; border-radius: 50%; border: 1px solid white; }
-
-        .tabs {
+        /* Tabs UI (Connects with Swiper) */
+        .tabs-container {
             display: flex;
             width: 100%;
-            margin-top: 10px;
+            background: var(--wa-green);
         }
-
         .tab {
-            flex: 1;
-            text-align: center;
-            padding: 12px 0;
-            font-weight: bold;
-            font-size: 14px;
-            cursor: pointer;
-            opacity: 0.7;
-            transition: 0.3s;
-            border-bottom: 3px solid transparent;
+            flex: 1; text-align: center; padding: 15px 0;
+            font-weight: 500; font-size: 14px; color: rgba(255,255,255,0.7);
+            cursor: pointer; position: relative;
+            text-transform: uppercase;
+        }
+        .tab.active { color: white; }
+        .tab-indicator {
+            position: absolute; bottom: 0; left: 0; height: 3px; background: white;
+            transition: transform 0.3s ease;
+            width: 33.33%; /* Since 3 tabs */
         }
 
-        .tab.active {
-            opacity: 1;
-            border-bottom: 3px solid white;
-        }
-
-        /* Content Area */
-        #main-content {
-            flex: 1;
+        /* Main Content (Swiper Slider) */
+        .swiper { width: 100%; flex: 1; }
+        .swiper-slide {
+            height: 100%;
             overflow-y: auto;
             padding: 15px;
-            padding-bottom: 100px;
-            display: flex;
-            transition: transform 0.3s ease;
+            box-sizing: border-box;
+            display: flex; flex-direction: column;
         }
 
-        .tab-page {
-            min-width: 100%;
-            display: none;
+        /* --- WhatsApp Style Input Boxes at TOP --- */
+        .input-box-container {
+            background: white;
+            padding: 12px;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            display: flex; gap: 10px; align-items: center;
+            flex-shrink: 0; /* Won't shrink */
+        }
+        .wa-input {
+            flex: 1; border: none; padding: 10px; border-radius: 20px;
+            background: #f0f0f0; outline: none; font-size: 15px;
+        }
+        .wa-send-btn {
+            background: var(--wa-teal); color: white; border: none;
+            width: 42px; height: 42px; border-radius: 50%;
+            cursor: pointer; font-size: 18px;
+            display: flex; justify-content: center; align-items: center;
         }
 
-        .tab-page.active { display: block; }
+        /* Password Input Group (Special) */
+        .pass-input-group { flex: 1; display: flex; flex-direction: column; gap: 8px; }
+        .multi-save-btn {
+            background: var(--wa-teal); color: white; border: none;
+            padding: 10px 20px; border-radius: 5px; font-weight: bold; cursor: pointer;
+        }
 
         /* Message Bubbles (WhatsApp Style) */
-        .message-card {
-            background: white;
-            padding: 10px 15px;
-            border-radius: 8px;
-            margin-bottom: 10px;
-            position: relative;
-            box-shadow: 0 1px 2px rgba(0,0,0,0.1);
-            max-width: 90%;
+        .data-list { flex: 1; display: flex; flex-direction: column-reverse; } /* New items on top */
+        .card {
+            background: white; padding: 12px 16px; border-radius: 8px;
+            margin-bottom: 12px; position: relative;
+            box-shadow: 0 1px 1px rgba(0,0,0,0.1);
+            max-width: 90%; align-self: flex-start; /* Default left */
         }
+        /* Style for Query/Note */
+        .card.msg-type { background: #DCF8C6; align-self: flex-end; } /* Light green right bubble */
+        
+        .card-text { color: var(--text-main); font-size: 15px; line-height: 1.4; }
+        .time-stamp { font-size: 11px; color: var(--text-sec); display: block; text-align: right; margin-top: 6px; }
 
-        .time-stamp {
-            font-size: 10px;
-            color: #888;
-            display: block;
-            text-align: right;
-            margin-top: 5px;
+        /* Password Card Details */
+        .pass-card-title { font-weight: bold; color: var(--wa-green); font-size: 16px; margin-bottom: 8px; display: block;}
+        .credential-row {
+            display: flex; justify-content: space-between; align-items: center;
+            background: #f9f9f9; padding: 8px; border-radius: 5px; margin-bottom: 5px;
+            border: 1px solid #eee;
         }
-
-        .action-btns {
-            display: flex;
-            gap: 10px;
-            margin-top: 5px;
-            border-top: 1px solid #eee;
-            padding-top: 5px;
+        .cred-label { color: var(--text-sec); font-size: 12px; font-weight: bold;}
+        .cred-value { color: var(--text-main); font-size: 14px; font-family: monospace;}
+        
+        /* Action Buttons */
+        .card-actions {
+            display: flex; gap: 8px; margin-top: 10px; border-top: 1px solid #eee; padding-top: 8px;
         }
-
-        .btn-done { color: var(--wa-teal); cursor: pointer; border: none; background: none; font-weight: bold; }
-        .btn-delete { color: #e74c3c; cursor: pointer; border: none; background: none; }
-
-        /* Input Areas */
-        .input-bar {
-            position: fixed;
-            bottom: 0;
-            width: 100%;
-            background: #f0f0f0;
-            padding: 10px;
-            display: flex;
-            box-sizing: border-box;
-            gap: 10px;
+        .btn-icon {
+            background: none; border: none; cursor: pointer; font-size: 14px;
+            display: flex; align-items: center; gap: 5px; padding: 5px; border-radius: 4px;
         }
+        .btn-icon:hover { background: #f0f0f0; }
+        .btn-copy { color: var(--wa-teal); }
+        .btn-view { color: var(--text-sec); }
+        .btn-delete { color: #e74c3c; margin-left: auto; } /* Push to right */
 
-        .input-bar input, .input-bar textarea {
-            flex: 1;
-            padding: 10px;
-            border-radius: 20px;
-            border: 1px solid #ddd;
-            outline: none;
-        }
-
-        .send-btn {
-            background: var(--wa-teal);
-            color: white;
-            border: none;
-            width: 45px;
-            height: 45px;
-            border-radius: 50%;
-            cursor: pointer;
-        }
-
-        /* Password Specific */
-        .pass-input-group {
-            display: flex;
-            flex-direction: column;
-            gap: 5px;
-            width: 100%;
-        }
     </style>
 </head>
 <body>
@@ -188,63 +165,73 @@
     <div id="login-screen">
         <div class="login-card">
             <i class="fab fa-whatsapp" style="font-size: 60px; color: var(--wa-light-green);"></i>
-            <h2>GMS Smart Tracker</h2>
-            <p>Please login to continue</p>
+            <h2>GMS Smart Tracker Pro</h2>
+            <p>Please login to synchronize your data</p>
             <button id="google-login-btn"><i class="fab fa-google"></i> Sign in with Google</button>
         </div>
     </div>
 
-    <div id="dashboard-screen" class="hidden">
+    <div id="dashboard-screen">
         <header>
             <div class="top-bar">
-                <div id="user-display-name" style="font-weight: bold;">User Name</div>
+                <div class="app-title">GMS Tracker</div>
                 <div class="user-profile">
+                    <span id="user-display-name">User</span>
                     <img id="user-photo" src="" alt="DP">
                 </div>
             </div>
-            <div class="tabs">
-                <div class="tab active" onclick="switchTab('queries', 0)">QUERIES</div>
-                <div class="tab" onclick="switchTab('passwords', 1)">PASSWORDS</div>
-                <div class="tab" onclick="switchTab('notes', 2)">NOTES</div>
+            
+            <div class="tabs-container">
+                <div class="tab active" onclick="jumpToTab(0)">Queries</div>
+                <div class="tab" onclick="jumpToTab(1)">Passwords</div>
+                <div class="tab" onclick="jumpToTab(2)">Notes</div>
+                <div class="tab-indicator" id="tab-indicator"></div>
             </div>
         </header>
 
-        <main id="main-content">
-            <div id="queries-page" class="tab-page active">
-                <div id="queries-list"></div>
-                <div class="input-bar">
-                    <input type="text" id="query-input" placeholder="Type a query...">
-                    <button class="send-btn" onclick="saveData('queries')"><i class="fas fa-paper-plane"></i></button>
-                </div>
-            </div>
-
-            <div id="passwords-page" class="tab-page">
-                <div id="passwords-list"></div>
-                <div class="input-bar" style="height: auto; flex-direction: column;">
-                    <div class="pass-input-group">
-                        <input type="text" id="pass-title" placeholder="Service Name (e.g. Gmail)">
-                        <input type="text" id="pass-val" placeholder="Password">
-                        <input type="text" id="pass-note" placeholder="Short note">
+        <div class="swiper">
+            <div class="swiper-wrapper">
+                
+                <div class="swiper-slide" id="queries-slide">
+                    <div class="input-box-container">
+                        <input type="text" id="query-input" class="wa-input" placeholder="Type new query...">
+                        <button class="wa-send-btn" onclick="saveData('queries')"><i class="fas fa-paper-plane"></i></button>
                     </div>
-                    <button onclick="saveData('passwords')" style="background: var(--wa-teal); color: white; border: none; padding: 10px; border-radius: 5px;">Save Password</button>
+                    <div id="queries-list" class="data-list"></div>
                 </div>
-            </div>
 
-            <div id="notes-page" class="tab-page">
-                <div id="notes-list"></div>
-                <div class="input-bar">
-                    <input type="text" id="note-input" placeholder="Write a note...">
-                    <button class="send-btn" onclick="saveData('notes')"><i class="fas fa-plus"></i></button>
+                <div class="swiper-slide" id="passwords-slide">
+                    <div class="input-box-container">
+                        <div class="pass-input-group">
+                            <input type="text" id="pass-title" class="wa-input" placeholder="Service (e.g., Gmail)">
+                            <input type="text" id="pass-user" class="wa-input" placeholder="Username/Email">
+                            <input type="password" id="pass-val" class="wa-input" placeholder="Password">
+                        </div>
+                        <button class="multi-save-btn" onclick="saveData('passwords')">Save</button>
+                    </div>
+                    <div id="passwords-list" class="data-list"></div>
                 </div>
+
+                <div class="swiper-slide" id="notes-slide">
+                    <div class="input-box-container">
+                        <input type="text" id="note-input" class="wa-input" placeholder="Take a note...">
+                        <button class="wa-send-btn" onclick="saveData('notes')"><i class="fas fa-plus"></i></button>
+                    </div>
+                    <div id="notes-list" class="data-list"></div>
+                </div>
+
             </div>
-        </main>
+        </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
         import { getDatabase, ref, set, push, onValue, remove } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-database.js";
         import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
 
+        // Your Config
         const firebaseConfig = {
             apiKey: "AIzaSyBt8gP3y2M3tjabKwjNfiotgqmxmhIq7cI",
             authDomain: "encryption-cb1d7.firebaseapp.com",
@@ -260,112 +247,181 @@
         const auth = getAuth(app);
         const provider = new GoogleAuthProvider();
 
-        // --- AUTH LOGIC ---
+        let currentUid = null;
+        let swiperInstance = null;
+
+        // --- CORE APP LOGIC ---
+
+        // 1. Initialize Swiper (Sliding Logic)
+        function initSwiper() {
+            swiperInstance = new Swiper('.swiper', {
+                initialSlide: 0,
+                speed: 300,
+                loop: false,
+                on: {
+                    slideChange: function () {
+                        updateTabIndicator(this.activeIndex);
+                    }
+                }
+            });
+        }
+
+        // 2. Tab Navigation Utilities
+        const tabs = document.querySelectorAll('.tab');
+        const indicator = document.getElementById('tab-indicator');
+
+        function updateTabIndicator(index) {
+            tabs.forEach((tab, i) => tab.classList.toggle('active', i === index));
+            indicator.style.transform = `translateX(${index * 100}%)`;
+        }
+
+        window.jumpToTab = (index) => {
+            if(swiperInstance) swiperInstance.slideTo(index);
+        }
+
+        // 3. Auth & Sync Logic
         document.getElementById('google-login-btn').onclick = () => signInWithPopup(auth, provider);
 
         onAuthStateChanged(auth, (user) => {
             if (user) {
+                currentUid = user.uid;
                 document.getElementById('login-screen').classList.add('hidden');
-                document.getElementById('dashboard-screen').classList.remove('hidden');
                 document.getElementById('user-display-name').innerText = user.displayName;
                 document.getElementById('user-photo').src = user.photoURL;
-                initApp(user.uid);
+                
+                initSwiper(); // Init sliding after login
+                syncData(); // Load data
+            } else {
+                document.getElementById('login-screen').classList.remove('hidden');
+                currentUid = null;
             }
         });
 
-        // --- TAB SWITCHING ---
-        window.switchTab = (tabName, index) => {
-            document.querySelectorAll('.tab').forEach((t, i) => {
-                t.classList.toggle('active', i === index);
-            });
-            document.querySelectorAll('.tab-page').forEach(page => {
-                page.classList.toggle('active', page.id === tabName + '-page');
-            });
-        }
+        // 4. Data Synchronization (Firebase + LocalStorage)
+        function syncData() {
+            const sections = ['queries', 'passwords', 'notes'];
+            sections.forEach(path => {
+                // Load Local Cache (Offline)
+                const cached = localStorage.getItem(`GMS_${currentUid}_${path}`);
+                if (cached) renderList(path, JSON.parse(cached));
 
-        // --- DATA LOGIC ---
-        function initApp(uid) {
-            const paths = ['queries', 'passwords', 'notes'];
-            paths.forEach(path => {
-                // Load from LocalStorage first (Offline Support)
-                const cached = localStorage.getItem(`cache_${uid}_${path}`);
-                if (cached) render(path, JSON.parse(cached));
-
-                // Sync from Firebase Realtime DB
-                onValue(ref(db, `users/${uid}/${path}`), (snapshot) => {
+                // Realtime Sync
+                onValue(ref(db, `users/${currentUid}/${path}`), (snapshot) => {
                     const data = snapshot.val() || {};
-                    localStorage.setItem(`cache_${uid}_${path}`, JSON.stringify(data));
-                    render(path, data);
+                    localStorage.setItem(`GMS_${currentUid}_${path}`, JSON.stringify(data));
+                    renderList(path, data);
                 });
             });
         }
 
+        // 5. Save Data Function
         window.saveData = (path) => {
-            const uid = auth.currentUser.uid;
+            if(!currentUid) return;
             let payload = { timestamp: new Date().toLocaleString() };
+            let isValid = false;
 
             if (path === 'queries') {
-                const val = document.getElementById('query-input').value;
-                if (!val) return;
-                payload.text = val;
-                document.getElementById('query-input').value = '';
+                const val = document.getElementById('query-input').value.trim();
+                if (val) { payload.text = val; isValid = true; document.getElementById('query-input').value = ''; }
             } else if (path === 'notes') {
-                const val = document.getElementById('note-input').value;
-                if (!val) return;
-                payload.text = val;
-                document.getElementById('note-input').value = '';
+                const val = document.getElementById('note-input').value.trim();
+                if (val) { payload.text = val; isValid = true; document.getElementById('note-input').value = ''; }
             } else if (path === 'passwords') {
-                const title = document.getElementById('pass-title').value;
-                const pass = document.getElementById('pass-val').value;
-                const note = document.getElementById('pass-note').value;
-                if (!title || !pass) return;
-                payload = { ...payload, title, pass, note };
-                document.getElementById('pass-title').value = '';
-                document.getElementById('pass-val').value = '';
-                document.getElementById('pass-note').value = '';
+                const title = document.getElementById('pass-title').value.trim();
+                const user = document.getElementById('pass-user').value.trim();
+                const pass = document.getElementById('pass-val').value.trim();
+                if (title && user && pass) {
+                    payload = { ...payload, title, user, pass }; isValid = true;
+                    document.getElementById('pass-title').value = '';
+                    document.getElementById('pass-user').value = '';
+                    document.getElementById('pass-val').value = '';
+                } else { alert("Please fill Title, Username, and Password"); }
             }
 
-            const newRef = push(ref(db, `users/${uid}/${path}`));
-            set(newRef, payload);
+            if(isValid) {
+                push(ref(db, `users/${currentUid}/${path}`), payload);
+            }
         };
 
+        // 6. Delete Utility
         window.deleteItem = (path, key) => {
-            if(confirm("Are you sure?")) {
-                remove(ref(db, `users/${auth.currentUser.uid}/${path}/${key}`));
+            if(confirm("Permanently delete this item?")) {
+                remove(ref(db, `users/${currentUid}/${path}/${key}`));
             }
         };
 
-        function render(path, data) {
+        // 7. Render Lists (WhatsApp UI Bubbles)
+        function renderList(path, data) {
             const list = document.getElementById(`${path}-list`);
             list.innerHTML = '';
-            Object.keys(data).reverse().forEach(key => {
+            
+            // Sort keys by timestamp (newest on top) - requires reversing because data comes in oldest first
+            const keys = Object.keys(data);
+            
+            keys.forEach(key => {
                 const item = data[key];
-                const div = document.createElement('div');
-                div.className = 'message-card';
+                const card = document.createElement('div');
+                card.className = 'card';
 
                 if (path === 'queries') {
-                    div.innerHTML = `<div>${item.text}</div>
+                    card.classList.add('msg-type'); // WA Style bubble
+                    card.innerHTML = `<div class="card-text">${item.text}</div>
                         <span class="time-stamp">${item.timestamp}</span>
-                        <div class="action-btns"><button class="btn-done" onclick="deleteItem('queries','${key}')">✔ Done</button></div>`;
+                        <div class="card-actions"><button class="btn-icon btn-copy" onclick="deleteItem('queries','${key}')">✔ Done</button></div>`;
                 } 
                 else if (path === 'notes') {
-                    div.innerHTML = `<div>${item.text}</div>
+                    card.classList.add('msg-type'); // WA Style bubble
+                    card.innerHTML = `<div class="card-text">${item.text}</div>
                         <span class="time-stamp">${item.timestamp}</span>
-                        <div class="action-btns"><button class="btn-delete" onclick="deleteItem('notes','${key}')"><i class="fas fa-trash"></i> Delete</button></div>`;
+                        <div class="card-actions"><button class="btn-icon btn-delete" onclick="deleteItem('notes','${key}')"><i class="fas fa-trash"></i></button></div>`;
                 }
                 else if (path === 'passwords') {
-                    div.innerHTML = `<strong>${item.title}</strong>
-                        <div id="p-box-${key}" style="margin: 5px 0;">Password: ••••••••</div>
-                        <div style="font-size:12px; color: #666;">Note: ${item.note}</div>
+                    card.innerHTML = `
+                        <span class="pass-card-title">${item.title}</span>
+                        
+                        <div class="credential-row">
+                            <div><div class="cred-label">Username</div><div class="cred-value" id="u-${key}">${item.user}</div></div>
+                            <button class="btn-icon btn-copy" onclick="copyText('u-${key}')"><i class="fas fa-copy"></i></button>
+                        </div>
+                        
+                        <div class="credential-row">
+                            <div><div class="cred-label">Password</div><div class="cred-value" id="p-${key}">••••••••</div></div>
+                            <div style="display:flex; gap:5px">
+                                <button class="btn-icon btn-view" onclick="togglePass('${key}', '${item.pass}')"><i class="fas fa-eye"></i></button>
+                                <button class="btn-icon btn-copy" onclick="copyTextDirect('${item.pass}')"><i class="fas fa-key"></i></button>
+                            </div>
+                        </div>
+
                         <span class="time-stamp">${item.timestamp}</span>
-                        <div class="action-btns">
-                            <button class="btn-done" onclick="document.getElementById('p-box-${key}').innerText='Password: ${item.pass}'"><i class="fas fa-eye"></i> View</button>
-                            <button class="btn-delete" onclick="deleteItem('passwords','${key}')">Delete</button>
+                        <div class="card-actions">
+                            <button class="btn-icon btn-delete" onclick="deleteItem('passwords','${key}')"><i class="fas fa-trash"></i> Delete</button>
                         </div>`;
                 }
-                list.appendChild(div);
+                list.appendChild(card); // Will render new at bottom, but Flex reverses it
             });
         }
+
+        // --- HELPER FUNCTIONS (Copy/View) ---
+
+        window.togglePass = (key, realPass) => {
+            const el = document.getElementById(`p-${key}`);
+            if(el.innerText === '••••••••') {
+                el.innerText = realPass;
+                el.style.fontFamily = 'monospace';
+            } else {
+                el.innerText = '••••••••';
+            }
+        }
+
+        window.copyText = (elementId) => {
+            const text = document.getElementById(elementId).innerText;
+            navigator.clipboard.writeText(text).then(() => alert("Copied to clipboard!"));
+        }
+
+        window.copyTextDirect = (text) => {
+            navigator.clipboard.writeText(text).then(() => alert("Password Copied!"));
+        }
+
     </script>
 </body>
 </html>
